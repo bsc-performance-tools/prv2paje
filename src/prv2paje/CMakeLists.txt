@@ -1,0 +1,14 @@
+cmake_minimum_required(VERSION 2.8)
+
+FILE(GLOB_RECURSE SRC_FILES ${CMAKE_HOME_DIRECTORY}/src/prv2paje/*.cpp)
+set(HEADER_DIR ${CMAKE_HOME_DIRECTORY}/src/prv2paje/headers)
+FILE(GLOB HEADER_FILES ${HEADER_DIR}/*.h)
+include_directories(${HEADER_DIR})
+
+add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEADER_FILES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PRV2PAJE_VERSION} SOVERSION ${PRV2PAJE_VERSION_MAJOR})
+
+add_definitions(-D__BUILD_VERSION__="${PRV2PAJE_VERSION}")
+
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
