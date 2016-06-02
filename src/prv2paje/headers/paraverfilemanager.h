@@ -4,7 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-
+#include "config.h"
 
 using namespace std;
 
@@ -16,7 +16,25 @@ namespace prv2paje
         public:
             ParaverFileManager(String prvPath);
             ~ParaverFileManager();
-        private:
+            bool getPrvValid() const;
+
+            bool getPcfValid() const;
+
+            bool getRowValid() const;
+
+            ifstream *getPrvStream() const;
+
+            ifstream *getPcfStream() const;
+
+            ifstream *getRowStream() const;
+
+            string getPrvPath() const;
+
+            string getPcfPath() const;
+
+            string getRowPath() const;
+
+    private:
             bool prvValid;
             bool pcfValid;
             bool rowValid;
