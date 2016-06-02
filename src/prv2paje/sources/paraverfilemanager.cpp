@@ -9,26 +9,26 @@ prv2paje::ParaverFileManager::ParaverFileManager(string prvPath)
     prvStream=new ifstream();
     pcfStream=new ifstream();
     rowStream=new ifstream();
-    if (prvPath.substr(prvPath.end()-3).compare(PRV_EXT)==0){
-        prvStream->open(prvPath);
+    if (string(this->prvPath.end()-3,this->prvPath.end()).compare(PRV_EXT)==0){
+        prvStream->open(prvPath.c_str());
         if (!prvStream->is_open()){
             prvValid=false;
             pcfValid=false;
             rowValid=false;
         }
         else{
-            prvvalid=true;
+            prvValid=true;
             pcfPath=prvPath;
-            pcfPath.replace(str.end()-3, 3, PCF_EXT);
+            pcfPath.replace(prvPath.end()-3, prvPath.end(), PCF_EXT);
             rowPath=prvPath;
-            rowPath.replace(str.end()-3, 3, ROW_EXT);
-            pcfStream->open(pcfPath);
+            rowPath.replace(prvPath.end()-3, prvPath.end(), ROW_EXT);
+            pcfStream->open(pcfPath.c_str());
             if (pcfStream->is_open()){
                 pcfValid=true;
             }else{
                 pcfValid=false;
             }
-            rowStream->open(rowPath);
+            rowStream->open(rowPath.c_str());
             if (rowStream->is_open()){
                 rowValid=true;
             }else{
@@ -45,47 +45,46 @@ prv2paje::ParaverFileManager::~ParaverFileManager()
     rowStream->close();
 }
 
-string ParaverFileManager::getRowPath() const
+string prv2paje::ParaverFileManager::getRowPath() const
 {
     return rowPath;
 }
 
-string ParaverFileManager::getPcfPath() const
+string prv2paje::ParaverFileManager::getPcfPath() const
 {
     return pcfPath;
 }
 
-string ParaverFileManager::getPrvPath() const
+string prv2paje::ParaverFileManager::getPrvPath() const
 {
     return prvPath;
 }
 
-ifstream *ParaverFileManager::getRowStream() const
+ifstream* prv2paje::ParaverFileManager::getRowStream() const
 {
     return rowStream;
 }
 
-ifstream *ParaverFileManager::getPcfStream() const
+ifstream* prv2paje::ParaverFileManager::getPcfStream() const
 {
     return pcfStream;
 }
-
-ifstream *ParaverFileManager::getPrvStream() const
+ifstream* prv2paje::ParaverFileManager::getPrvStream() const
 {
     return prvStream;
 }
 
-bool ParaverFileManager::getRowValid() const
+bool prv2paje::ParaverFileManager::getRowValid() const
 {
     return rowValid;
 }
 
-bool ParaverFileManager::getPcfValid() const
+bool prv2paje::ParaverFileManager::getPcfValid() const
 {
     return pcfValid;
 }
 
-bool ParaverFileManager::getPrvValid() const
+bool prv2paje::ParaverFileManager::getPrvValid() const
 {
     return prvValid;
 }

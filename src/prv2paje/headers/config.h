@@ -5,10 +5,10 @@
 #define __BUILD_VERSION__ "Unknown"
 #endif
 
-#define PRV_EXT ".prv"
-#define PCF_EXT ".pcf"
-#define ROW_EXT ".row"
+#define PRV_EXT "prv"
+#define PCF_EXT "pcf"
+#define ROW_EXT "row"
 
-#define PAJE_EXT ".pj"
+#define PAJE_EXT "pj"
 
 #endif // CONFIG_H

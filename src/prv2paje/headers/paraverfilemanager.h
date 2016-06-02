@@ -14,7 +14,7 @@ namespace prv2paje
     class ParaverFileManager
     {
         public:
-            ParaverFileManager(String prvPath);
+            ParaverFileManager(string prvPath);
             ~ParaverFileManager();
             bool getPrvValid() const;
 
