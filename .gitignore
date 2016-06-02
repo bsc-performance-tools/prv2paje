@@ -30,3 +30,7 @@
 #Cmake
 
 build/*
+
+#QT
+
+*.user
