@@ -14,20 +14,20 @@ prv2paje::PcfStates::~PcfStates()
 
 void prv2paje::PcfStates::addValue(int value, string label)
 {
-    values[value]=label;
+    values->operator [](value)=label;
 }
 
 void prv2paje::PcfStates::addColor(int value, RGB color)
 {
-    colors[value]=value;
+    colors->operator [](value)=color;
 }
 
-map<int, RGB> prv2paje::PcfStates::getColors() const
+map<int, prv2paje::RGB> *prv2paje::PcfStates::getColors() const
 {
     return colors;
 }
 
-map<int, string> prv2paje::PcfStates::getValues() const
+map<int, string> *prv2paje::PcfStates::getValues() const
 {
     return values;
 }

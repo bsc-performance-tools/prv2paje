@@ -5,36 +5,36 @@ prv2paje::RGB::RGB():r(0), g(0), b(0)
 
 }
 
-int RGB::getR() const
+int prv2paje::RGB::getR() const
 {
     return r;
 }
 
-void RGB::setR(int value)
+void prv2paje::RGB::setR(int value)
 {
     if (value>=0&&value<=255){
         r = value;
     }
 }
 
-int RGB::getG() const
+int prv2paje::RGB::getG() const
 {
     return g;
 }
 
-void RGB::setG(int value)
+void prv2paje::RGB::setG(int value)
 {
     if (value>=0&&value<=255){
         g = value;
     }
 }
 
-int RGB::getB() const
+int prv2paje::RGB::getB() const
 {
     return b;
 }
 
-void RGB::setB(int value)
+void prv2paje::RGB::setB(int value)
 {
     if (value>=0&&value<=255){
         b = value;
@@ -62,8 +62,8 @@ void prv2paje::RGB::setRGBFromPcf(string value)
     this->g=0;
     this->b=0;
     string rgb=value.substr(1,rgb.size()-1);
-    vector<string> tokens=StringUtils.split(value, ",");
+    vector<string> tokens=StringUtils().split(value, ",");
     if (tokens.size()==3){
-        setRGB(Integer.parseInt(tokens[0]), Integer.parseInt(tokens[1]), Integer.parseInt(tokens[2]));
+        setRGB(atoi(tokens[0].c_str()), atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
     }
 }

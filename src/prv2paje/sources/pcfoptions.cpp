@@ -22,5 +22,5 @@ prv2paje::PcfOptions::~PcfOptions()
 
 void prv2paje::PcfOptions::addOption(string name, string value)
 {
-    options[name]=value;
+    options->operator [](name)=value;
 }

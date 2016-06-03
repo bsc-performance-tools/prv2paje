@@ -2,6 +2,7 @@
 #define RGB_H
 
 #include <string>
+#include <stdlib.h>
 #include "stringutils.h"
 
 using namespace std;
