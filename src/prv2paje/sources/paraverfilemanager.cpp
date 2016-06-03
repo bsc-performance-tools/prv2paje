@@ -40,9 +40,18 @@ prv2paje::ParaverFileManager::ParaverFileManager(string prvPath)
 
 prv2paje::ParaverFileManager::~ParaverFileManager()
 {
-    prvStream->close();
-    pcfStream->close();
-    rowStream->close();
+    if (prvValid){
+        prvStream->close();
+    }
+    if (pcfStream){
+        pcfStream->close();
+    }
+    if (rowStream){
+        rowStream->close();
+    }
+    delete prvStream;
+    delete pcfStream;
+    delete rowStream;
 }
 
 string prv2paje::ParaverFileManager::getRowPath() const
