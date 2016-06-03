@@ -18,10 +18,13 @@ prv2paje::ParaverFileManager::ParaverFileManager(string prvPath)
         }
         else{
             prvValid=true;
+            string prvExt=string(PRV_EXT);
             pcfPath=prvPath;
-            pcfPath.replace(prvPath.end()-3, prvPath.end(), PCF_EXT);
+            string ext=string(PCF_EXT);
+            pcfPath.replace(prvPath.size()-prvExt.size(), ext.size(), ext);
             rowPath=prvPath;
-            rowPath.replace(prvPath.end()-3, prvPath.end(), ROW_EXT);
+            ext=string(ROW_EXT);
+            rowPath.replace(prvPath.size()-prvExt.size(), ext.size(), ext);
             pcfStream->open(pcfPath.c_str());
             if (pcfStream->is_open()){
                 pcfValid=true;

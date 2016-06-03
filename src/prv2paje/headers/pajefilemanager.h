@@ -19,7 +19,7 @@ namespace prv2paje{
 
     private:
         bool pajeValid;
-        ifstream *pajeStream;
+        ofstream *pajeStream;
         string pajePath;
     };
 

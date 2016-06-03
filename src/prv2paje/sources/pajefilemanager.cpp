@@ -4,7 +4,7 @@
 prv2paje::PajeFileManager::PajeFileManager(string pajePath):pajePath(pajePath)
 {
     pajeValid=false;
-    pajeStream=new ifstream();
+    pajeStream=new ofstream();
     pajeStream->open(pajePath.c_str());
     if (pajeStream->is_open()){
         pajeValid=true;
