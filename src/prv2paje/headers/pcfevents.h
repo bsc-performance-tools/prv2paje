@@ -29,15 +29,15 @@ namespace prv2paje{
         PcfEventType getEventType() const;
         void setEventType(const PcfEventType &value);
 
-        map<int, PcfValue> *getValues() const;
-        void setValues(map<int, PcfValue> *value);
+        map<int, PcfValue*> *getValues() const;
+        void setValues(map<int, PcfValue*> *value);
 
     private:
         int gradient;
         int type;
         string label;
         PcfEventType eventType;
-        map<int, PcfValue>* values;
+        map<int, PcfValue*>* values;
     };
 
 }

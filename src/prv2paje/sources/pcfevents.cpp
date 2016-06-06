@@ -5,6 +5,16 @@ prv2paje::PcfEvents::PcfEvents()
 
 }
 
+prv2paje::PcfEvents::PcfEvents(int gradient, int type):gradient(gradient), type(type), label("")
+{
+
+}
+
+prv2paje::PcfEvents::PcfEvents(int gradient, int type, string label): gradient(gradient), type(type), label(label)
+{
+
+}
+
 int prv2paje::PcfEvents::getGradient() const
 {
     return gradient;
@@ -45,12 +55,12 @@ void prv2paje::PcfEvents::setEventType(const PcfEventType &value)
     eventType = value;
 }
 
-map<int, prv2paje::PcfValue> * prv2paje::PcfEvents::getValues() const
+map<int, prv2paje::PcfValue*> * prv2paje::PcfEvents::getValues() const
 {
     return values;
 }
 
-void prv2paje::PcfEvents::setValues(map<int, PcfValue> *value)
+void prv2paje::PcfEvents::setValues(map<int, PcfValue*> *value)
 {
     values = value;
 }

@@ -62,7 +62,8 @@ void prv2paje::RGB::setRGBFromPcf(string value)
     this->g=0;
     this->b=0;
     string rgb=value.substr(1,rgb.size()-1);
-    vector<string> tokens=StringUtils().split(value, ",");
+    vector<string> tokens;
+    split(tokens, rgb, is_any_of(" "));
     if (tokens.size()==3){
         setRGB(atoi(tokens[0].c_str()), atoi(tokens[1].c_str()), atoi(tokens[2].c_str()));
     }

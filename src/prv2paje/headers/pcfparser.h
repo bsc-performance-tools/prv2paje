@@ -3,6 +3,16 @@
 
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <sstream>
+#include <vector>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim_all.hpp>
+
+#include <stdlib.h>
+
+#include "config.h"
 #include "pcfoptions.h"
 #include "pcfstates.h"
 #include "pcfevents.h"
@@ -11,6 +21,7 @@
 #include "stringutils.h"
 
 using namespace std;
+using namespace boost::algorithm;
 
 namespace prv2paje{
 
@@ -19,13 +30,14 @@ namespace prv2paje{
     public:
         PcfParser(ifstream* pcfStream);
     private:
+        enum Mode{Options, States, StatesColor, EventType, Values, GradientColor, GradientName, Unknown};
         void parse();
         ifstream* pcfStream;
         map<string,PcfOptions> *pcfOptions;
-        map<int, PcfStates> *pcfStates;
-        map<int, PcfEvents> *pcfEvents;
-        map<int, PcfGradient> *pcfGradient;
-        vector<map<int, PcfValue> > *pcfValues;
+        PcfStates*pcfStates;
+        map<int, PcfEvents*> *pcfEvents;
+        PcfGradient* pcfGradient;
+        vector<map<int, PcfValue*>* >*pcfValues;
     };
 
 }

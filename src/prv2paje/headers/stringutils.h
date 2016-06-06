@@ -12,7 +12,6 @@ namespace prv2paje{
     {
     public:
         StringUtils();
-        static vector<string> split(string value, string delimiter);
     };
 
 }

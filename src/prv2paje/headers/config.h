@@ -11,4 +11,9 @@
 
 #define PAJE_EXT "pj"
 
+#define STATES "STATES"
+#define STATES_COLOR "STATES_COLOR"
+#define EVENT_TYPE "EVENT_TYPE"
+#define VALUES "VALUES"
+
 #endif // CONFIG_H
