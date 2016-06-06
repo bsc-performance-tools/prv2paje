@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 2.8)
-FIND_PACKAGE(PkgConfig)
+find_package(PkgConfig)
+find_package(Boost REQUIRED)
 
 PKG_CHECK_MODULES(POTI REQUIRED poti>=4)
 
-FILE(GLOB_RECURSE SRC_FILES ${CMAKE_HOME_DIRECTORY}/src/prv2paje/*.cpp)
+
+
+file(GLOB_RECURSE SRC_FILES ${CMAKE_HOME_DIRECTORY}/src/prv2paje/*.cpp)
 set(HEADER_DIR ${CMAKE_HOME_DIRECTORY}/src/prv2paje/headers)
-FILE(GLOB HEADER_FILES ${HEADER_DIR}/*.h)
-include_directories(${HEADER_DIR} ${POTI_INCLUDE_DIRS})
+file(GLOB HEADER_FILES ${HEADER_DIR}/*.h)
+include_directories(${HEADER_DIR} ${POTI_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
 
 link_directories(${POTI_LIBRARY_DIRS})
 
@@ -14,8 +17,7 @@ add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEADER_FILES})
 
 add_definitions(-D__BUILD_VERSION__="${PRV2PAJE_VERSION}")
 
-TARGET_LINK_LIBRARIES(${PROJECT_NAME} ${POTI_LIBRARIES})
-
+target_link_libraries(${PROJECT_NAME} ${POTI_LIBRARIES} ${Boost_LIBRARIES})
 
 target_compile_options(${PROJECT_NAME} PUBLIC ${POTI_CFLAGS_OTHER})
 
