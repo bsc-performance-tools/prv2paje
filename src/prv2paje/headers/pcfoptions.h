@@ -12,8 +12,11 @@ class PcfOptions
 {
 public:
     PcfOptions(string name);
+
     ~PcfOptions();
+
     void addOption(string name, string value);
+
     map<string, string> *getOptions() const;
 
     string getName() const;

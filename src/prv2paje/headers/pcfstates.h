@@ -13,8 +13,11 @@ class PcfStates
 {
 public:
     PcfStates();
+
     ~PcfStates();
+
     void addValue(int value, string label);
+
     void addColor(int value, RGB color);
 
     map<int, string> *getValues() const;
