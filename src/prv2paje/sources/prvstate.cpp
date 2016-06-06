@@ -1,6 +1,6 @@
 #include "prvstate.h"
 
-PrvState::PrvState()
+prv2paje::PrvState::PrvState()
 {
 
 }

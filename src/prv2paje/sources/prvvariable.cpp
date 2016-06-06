@@ -1,6 +1,6 @@
 #include "prvvariable.h"
 
-PrvVariable::PrvVariable()
+prv2paje::PrvVariable::PrvVariable()
 {
 
 }

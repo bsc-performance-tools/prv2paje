@@ -6,7 +6,7 @@
 
 namespace prv2paje{
 
-    enum PrvHardwareContainerLevel{System, Node, Cpu};
+    enum PrvHardwareContainerLevel{System, Node, Cpu, Thread};
 
     class PrvHardwareContainer : public PrvContainer
     {

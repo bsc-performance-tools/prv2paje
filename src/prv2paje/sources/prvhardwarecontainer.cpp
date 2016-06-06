@@ -1,6 +1,6 @@
 #include "prvhardwarecontainer.h"
 
-PrvHardwareContainer::PrvHardwareContainer()
+prv2paje::PrvHardwareContainer::PrvHardwareContainer()
 {
 
 }

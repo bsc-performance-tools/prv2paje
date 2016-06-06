@@ -3,20 +3,19 @@
 
 #include "prvcontainer.h"
 
+//Will not be used for the moment
+
 namespace prv2paje{
 
-    enum PrvSoftwareContainerLevel{Application, Task, Thread, PrvSoftwareContainerLevel_COUNT};
+    enum PrvSoftwareContainerLevel{System, Application, Task};
 
     class PrvSoftwareContainer : public PrvContainer
     {
     public:
         PrvSoftwareContainer();
-        static void InitInstanciation();
-        static void NewInstance(PrvSoftwareContainerLevel);
     private:
         PrvSoftwareContainerLevel level;
         PrvSoftwareContainer *parent;
-        static int instanciation[PrvSoftwareContainerLevel_COUNT];
         int cpu;
     };
 

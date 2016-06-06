@@ -1,6 +1,6 @@
 #include "prvevent.h"
 
-PrvEvent::PrvEvent()
+prv2paje::PrvEvent::PrvEvent()
 {
 
 }

@@ -1,6 +1,6 @@
 #include "prvsoftwarecontainer.h"
 
-PrvSoftwareContainer::PrvSoftwareContainer()
+prv2paje::PrvSoftwareContainer::PrvSoftwareContainer()
 {
 
 }
