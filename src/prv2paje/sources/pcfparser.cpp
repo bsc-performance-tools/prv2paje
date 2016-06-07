@@ -61,7 +61,7 @@ void prv2paje::PcfParser::parse(){
                         pcfValues->push_back(new map<int, PcfValue*>());
                         int i;
                         for (i=0; i<eventBunch.size();i++){
-                           pcfEvents->at(eventBunch[i])->setEventType(State);
+                           pcfEvents->at(eventBunch[i])->setEventType(Event);
                            pcfEvents->at(eventBunch[i])->setValues(pcfValues->at(pcfValues->size()-1));
                         }
                     }else{
@@ -120,7 +120,7 @@ void prv2paje::PcfParser::parse(){
                             trim_right(label);
                             int type=atoi(tokens.operator [](1).c_str());
                             pcfEvents->operator [](type)=new PcfEvents(atoi(tokens.operator [](0).c_str()), type, label);
-                            pcfEvents->operator [](type)->setEventType(Undefined);
+                            pcfEvents->operator [](type)->setEventType(Variable);
                             eventBunch.push_back(type);
                         }
                         break;
@@ -134,6 +134,11 @@ void prv2paje::PcfParser::parse(){
                             }
                             trim_right(label);
                             int value=atoi(tokens.operator [](0).c_str());
+                            if (value==END_EVENT_STATE){
+                                for (i=0; i<eventBunch.size();i++){
+                                   pcfEvents->at(eventBunch[i])->setEventType(States);
+                                }
+                            }
                             pcfValues->operator [](pcfValues->size()-1)->operator [](value)=new PcfValue(value,tokens[1]);
                             if (label.compare("")!=0){
                                 pcfValues->operator [](pcfValues->size()-1)->operator [](value)->setLongLabel(label);

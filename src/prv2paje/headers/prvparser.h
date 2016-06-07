@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 
+#include "pcfparser.h"
 #include "pajewriter.h"
 
 using namespace std;
@@ -21,8 +22,14 @@ namespace prv2paje{
     class PrvParser
     {
     public:
-        PrvParser(ifstream* prvStream, PajeWriter);
+        PrvParser(ifstream* prvStream, PcfParser* pcfParser, PajeWriter* pajeWriter);
     private:
+        enum Mode{Header, Communicators, Communication, Event, };
+        void parse();
+        ifstream* prvStream;
+        PajeWriter* pajeWriter;
+        PcfParser* pcfParser;
+
     };
 
 }
