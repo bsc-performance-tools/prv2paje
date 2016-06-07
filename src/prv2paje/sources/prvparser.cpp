@@ -9,7 +9,7 @@ prv2paje::PrvParser::PrvParser(ifstream *prvStream, prv2paje::PcfParser *pcfPars
 
 void prv2paje::PrvParser::parse()
 {
-    string line;
+    /*string line;
     Mode mode=Header;
     if (prvStream){
         while(getline(*prvStream,line)){
@@ -21,5 +21,5 @@ void prv2paje::PrvParser::parse()
                 split(tokens, line, is_any_of(":"));
                 if (mode==Header){
 
-                }
+                }*/
 }

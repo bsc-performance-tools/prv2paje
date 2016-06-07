@@ -136,7 +136,7 @@ void prv2paje::PcfParser::parse(){
                             int value=atoi(tokens.operator [](0).c_str());
                             if (value==END_EVENT_STATE){
                                 for (i=0; i<eventBunch.size();i++){
-                                   pcfEvents->at(eventBunch[i])->setEventType(States);
+                                   pcfEvents->at(eventBunch[i])->setEventType(State);
                                 }
                             }
                             pcfValues->operator [](pcfValues->size()-1)->operator [](value)=new PcfValue(value,tokens[1]);
