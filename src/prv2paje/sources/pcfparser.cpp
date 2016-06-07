@@ -2,20 +2,42 @@
 
 
 prv2paje::PcfParser::PcfParser(ifstream *pcfStream):
-    pcfStream(pcfStream), pcfOptions(new map<string, PcfOptions>()), pcfStates(new PcfStates()),
+    pcfStream(pcfStream), pcfOptions(new map<string, PcfOptions*>()), pcfStates(new PcfStates()),
     pcfEvents(new map<int, PcfEvents*>()), pcfGradient(new PcfGradient()), pcfValues(new vector<map<int, PcfValue*>* >())
 {
+    parse();
+}
 
+prv2paje::PcfParser::~PcfParser()
+{
+    for (auto key : pcfOptions){
+        delete pcfOptions[key];
+    }
+    delete pcfOptions;
+    delete pcfStates;
+    for (auto key : pcfEvents){
+        delete pcfEvents[key];
+    }
+    delete pcfEvents;
+    delete pcfGradient;
+    for (auto key : pcfValues){
+        for (auto key2 : pcfValues[key]){
+            delete pcfValues[key][key2];
+        }
+        delete pcfValues[key];
+    }
+    delete pcfValues;
 }
 
 void prv2paje::PcfParser::parse(){
     string line;
     Mode mode=Unknown;
     string currentOption;
-    int lineNumber=1;
+    int lineNumber=0;
     vector<int> eventBunch;
     if (pcfStream){
         while(getline(*pcfStream,line)){
+            lineNumber++;
             replace(line.begin(), line.end(), '\t', ' ');
             trim_all(line);
             if (!line.empty()){
@@ -27,6 +49,10 @@ void prv2paje::PcfParser::parse(){
                         mode=States;
                     }else if(tokens.operator [](0).compare(STATES_COLOR)==0){
                         mode=StatesColor;
+                    }else if (tokens.operator [](0).compare(GRADIENT_NAMES)==0){
+                        mode=GradientName;
+                    }else if(tokens.operator [](0).compare(GRADIENT_COLOR)==0){
+                        mode=GradientColor;
                     }else if(tokens.operator [](0).compare(EVENT_TYPE)==0){
                         mode=EventType;
                         eventBunch.clear();
@@ -40,6 +66,8 @@ void prv2paje::PcfParser::parse(){
                         }
                     }else{
                         mode=Options;
+                        pcfOptions->at(tokens[0])=new PcfOptions(tokens[0]);
+                        currentOption=tokens[0];
                     }
                 }else{
                     switch(mode){
@@ -60,6 +88,25 @@ void prv2paje::PcfParser::parse(){
                             RGB rgb;
                             rgb.setRGBFromPcf(tokens[1]);
                             pcfStates->addColor(atoi(tokens.operator [](0).c_str()), rgb);
+                        }
+                        break;
+                        case GradientName:
+                        {
+                            string label="";
+                            int i;
+                            for (i=1;i<tokens.size();i++){
+                                label+=tokens[i];
+                                label+=" ";
+                            }
+                            trim_right(label);
+                            pcfGradient->addValue(atoi(tokens.operator [](0).c_str()), label);
+                        }
+                        break;
+                        case GradientColor:
+                        {
+                            RGB rgb;
+                            rgb.setRGBFromPcf(tokens[1]);
+                            pcfGradient->addColor(atoi(tokens.operator [](0).c_str()), rgb);
                         }
                         break;
                         case EventType:
@@ -91,6 +138,18 @@ void prv2paje::PcfParser::parse(){
                             if (label.compare("")!=0){
                                 pcfValues->at(pcfValues->size()-1)->at(value)->setLongLabel(label);
                             }
+                        }
+                        break;
+                        case Options:
+                        {
+                            string label="";
+                            int i;
+                            for (i=1;i<tokens.size();i++){
+                                label+=tokens[i];
+                                label+=" ";
+                            }
+                            trim_right(label);
+                            pcfOptions->at(currentOption)->addOption(tokens[0], label);
                         }
                         break;
                         default:
