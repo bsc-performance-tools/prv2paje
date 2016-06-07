@@ -10,21 +10,22 @@ prv2paje::PcfParser::PcfParser(ifstream *pcfStream):
 
 prv2paje::PcfParser::~PcfParser()
 {
-    for (auto key : pcfOptions){
-        delete pcfOptions[key];
+
+    for (auto it = pcfOptions->begin();it != pcfOptions->end(); it++) {
+        delete it->second;
     }
     delete pcfOptions;
     delete pcfStates;
-    for (auto key : pcfEvents){
-        delete pcfEvents[key];
+    for (auto it = pcfEvents->begin();it != pcfEvents->end(); it++){
+        delete it->second;
     }
     delete pcfEvents;
     delete pcfGradient;
-    for (auto key : pcfValues){
-        for (auto key2 : pcfValues[key]){
-            delete pcfValues[key][key2];
+    for (auto it = pcfValues->begin();it != pcfValues->end(); it++){
+        for (auto it2 = (*it)->begin();it2 != (*it)->end(); it2++){
+            delete it2->second;
         }
-        delete pcfValues[key];
+        delete (*it);
     }
     delete pcfValues;
 }
@@ -44,7 +45,6 @@ void prv2paje::PcfParser::parse(){
                 vector<string> tokens;
                 split(tokens, line, is_any_of(" "));
                 if (tokens.size()==1){
-                    //Mode Options
                     if (tokens.operator [](0).compare(STATES)==0){
                         mode=States;
                     }else if(tokens.operator [](0).compare(STATES_COLOR)==0){
@@ -66,7 +66,7 @@ void prv2paje::PcfParser::parse(){
                         }
                     }else{
                         mode=Options;
-                        pcfOptions->at(tokens[0])=new PcfOptions(tokens[0]);
+                        pcfOptions->operator [](tokens[0])=new PcfOptions(tokens[0]);
                         currentOption=tokens[0];
                     }
                 }else{
@@ -119,8 +119,8 @@ void prv2paje::PcfParser::parse(){
                             }
                             trim_right(label);
                             int type=atoi(tokens.operator [](1).c_str());
-                            pcfEvents->at(type)=new PcfEvents(atoi(tokens.operator [](0).c_str()), type, label);
-                            pcfEvents->at(type)->setEventType(Undefined);
+                            pcfEvents->operator [](type)=new PcfEvents(atoi(tokens.operator [](0).c_str()), type, label);
+                            pcfEvents->operator [](type)->setEventType(Undefined);
                             eventBunch.push_back(type);
                         }
                         break;
@@ -134,9 +134,9 @@ void prv2paje::PcfParser::parse(){
                             }
                             trim_right(label);
                             int value=atoi(tokens.operator [](0).c_str());
-                            pcfValues->at(pcfValues->size()-1)->at(value)=new PcfValue(value,tokens[1]);
+                            pcfValues->operator [](pcfValues->size()-1)->operator [](value)=new PcfValue(value,tokens[1]);
                             if (label.compare("")!=0){
-                                pcfValues->at(pcfValues->size()-1)->at(value)->setLongLabel(label);
+                                pcfValues->operator [](pcfValues->size()-1)->operator [](value)->setLongLabel(label);
                             }
                         }
                         break;
@@ -149,7 +149,7 @@ void prv2paje::PcfParser::parse(){
                                 label+=" ";
                             }
                             trim_right(label);
-                            pcfOptions->at(currentOption)->addOption(tokens[0], label);
+                            pcfOptions->operator [](currentOption)->addOption(tokens[0], label);
                         }
                         break;
                         default:

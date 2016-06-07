@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED)
 
-PKG_CHECK_MODULES(POTI REQUIRED poti>=4)
+PKG_CHECK_MODULES(POTI poti>=4)
 
 file(GLOB_RECURSE SRC_FILES ${CMAKE_HOME_DIRECTORY}/src/prv2paje/*.cpp)
 set(HEADER_DIR ${CMAKE_HOME_DIRECTORY}/src/prv2paje/headers)

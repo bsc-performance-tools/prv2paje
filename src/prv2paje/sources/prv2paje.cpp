@@ -27,6 +27,10 @@ int main(int argc, char* argv[])
         argumentManager.usage();
         return RETURN_ERR_PAJE;
     }
+    cout<<"prv2paje version "<<__BUILD_VERSION__<<endl;
+    cout<<"--------------------------------------- "<<endl;
+    cout<<"Parsing .pcf file..."<<endl;
     PcfParser pcfParser(paraverFileManager.getPcfStream());
+    cout<<"Done"<<endl;
     return RETURN_OK;
 }
