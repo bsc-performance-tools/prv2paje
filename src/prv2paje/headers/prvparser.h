@@ -10,12 +10,17 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim_all.hpp>
 
+#include <boost/tokenizer.hpp>
+
 #include <stdlib.h>
 
+#include "config.h"
 #include "pcfparser.h"
 #include "pajewriter.h"
+#include "prvmetadata.h"
 
 using namespace std;
+using namespace boost;
 
 namespace prv2paje{
 
@@ -24,12 +29,12 @@ namespace prv2paje{
     public:
         PrvParser(ifstream* prvStream, PcfParser* pcfParser, PajeWriter* pajeWriter);
     private:
-        enum Mode{Header, Communicators, Communication, Event, };
+        enum Mode{Header, Body};
         void parse();
         ifstream* prvStream;
         PajeWriter* pajeWriter;
         PcfParser* pcfParser;
-
+        PrvMetaData prvMetaData;
     };
 
 }

@@ -24,3 +24,8 @@ bool prv2paje::PajeFileManager::getPajeValid() const
 {
     return pajeValid;
 }
+
+string prv2paje::PajeFileManager::getPajePath() const
+{
+    return pajePath;
+}

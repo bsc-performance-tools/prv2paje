@@ -17,6 +17,8 @@ namespace prv2paje{
         ~PajeFileManager();
         bool getPajeValid() const;
 
+        string getPajePath() const;
+
     private:
         bool pajeValid;
         ofstream *pajeStream;

@@ -45,18 +45,18 @@ void prv2paje::PcfParser::parse(){
                 vector<string> tokens;
                 split(tokens, line, is_any_of(" "));
                 if (tokens.size()==1){
-                    if (tokens.operator [](0).compare(STATES)==0){
+                    if (tokens.operator [](0).compare(PCF_STATES)==0){
                         mode=States;
-                    }else if(tokens.operator [](0).compare(STATES_COLOR)==0){
+                    }else if(tokens.operator [](0).compare(PCF_STATES_COLOR)==0){
                         mode=StatesColor;
-                    }else if (tokens.operator [](0).compare(GRADIENT_NAMES)==0){
+                    }else if (tokens.operator [](0).compare(PCF_GRADIENT_NAMES)==0){
                         mode=GradientName;
-                    }else if(tokens.operator [](0).compare(GRADIENT_COLOR)==0){
+                    }else if(tokens.operator [](0).compare(PCF_GRADIENT_COLOR)==0){
                         mode=GradientColor;
-                    }else if(tokens.operator [](0).compare(EVENT_TYPE)==0){
+                    }else if(tokens.operator [](0).compare(PCF_EVENT_TYPE)==0){
                         mode=EventType;
                         eventBunch.clear();
-                    }else if(tokens.operator [](0).compare(VALUES)==0){
+                    }else if(tokens.operator [](0).compare(PCF_VALUES)==0){
                         mode=Values;
                         pcfValues->push_back(new map<int, PcfValue*>());
                         int i;
@@ -134,7 +134,7 @@ void prv2paje::PcfParser::parse(){
                             }
                             trim_right(label);
                             int value=atoi(tokens.operator [](0).c_str());
-                            if (value==END_EVENT_STATE){
+                            if (value==PCF_EVENT_STATE_VALUE_END){
                                 for (i=0; i<eventBunch.size();i++){
                                    pcfEvents->at(eventBunch[i])->setEventType(State);
                                 }
