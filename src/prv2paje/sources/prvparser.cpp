@@ -64,7 +64,7 @@ void prv2paje::PrvParser::parse()
                     //...
                     //saving metadata
                     pajeWriter->setPrvMetaData(prvMetaData);
-                    pajeWriter->processMetaData();
+                    pajeWriter->generatePajeHeader();
                 }else{
                     mode=Body;
                     string eventType=*tokensIterator;

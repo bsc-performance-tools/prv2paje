@@ -30,15 +30,21 @@ namespace prv2paje{
     public:
         PcfParser(ifstream* pcfStream);
         ~PcfParser();
+        map<string, PcfOptions *> *getPcfOptions() const;
+        PcfStates *getPcfStates() const;
+        map<int, PcfEvents *> *getPcfEvents() const;
+        PcfGradient *getPcfGradient() const;
+        vector<map<int, PcfValue *> *> *getPcfValues() const;
+
     private:
         enum Mode{Options, States, StatesColor, EventType, Values, GradientColor, GradientName, Unknown};
         void parse();
         ifstream* pcfStream;
         map<string,PcfOptions*> *pcfOptions;
-        PcfStates*pcfStates;
+        PcfStates* pcfStates;
         map<int, PcfEvents*> *pcfEvents;
-        PcfGradient* pcfGradient;
-        vector<map<int, PcfValue*>* >*pcfValues;
+        PcfGradient *pcfGradient;
+        vector<map<int, PcfValue*>* > *pcfValues;
     };
 
 }
