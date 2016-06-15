@@ -27,19 +27,19 @@ void prv2paje::PrvParser::parse()
                     //comment
                     string temp=*tokensIterator;
                     tokensIterator++;
-                    prvMetaData.setComment(temp);
+                    prvMetaData->setComment(temp);
                     //duration_unit
                     temp=*tokensIterator;
                     tokensIterator++;
                     vector<string> tokensTemp;
                     split(tokensTemp, temp, is_any_of(PRV_HEADER_SEP_DURATION));
                     if (tokensTemp.size()>0){
-                        prvMetaData.setDuration(stol(tokensTemp.operator [](PRV_HEADER_SUBFIELD_DURATION_VALUE)));
+                        prvMetaData->setDuration(stol(tokensTemp.operator [](PRV_HEADER_SUBFIELD_DURATION_VALUE)));
                     }
                     if (tokensTemp.size()>1){
-                        prvMetaData.setTimeUnit(tokensTemp[PRV_HEADER_SUBFIELD_DURATION_UNIT]);
+                        prvMetaData->setTimeUnit(tokensTemp[PRV_HEADER_SUBFIELD_DURATION_UNIT]);
                     }else{
-                        prvMetaData.setTimeUnit("");
+                        prvMetaData->setTimeUnit("");
                     }
                     //nodes"<cpu>"
                     temp=*tokensIterator;
@@ -50,7 +50,7 @@ void prv2paje::PrvParser::parse()
                     split(tokensTemp, temp, is_any_of(GENERIC_SEP));
                     //nodes
                     int nodes=atoi(tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_NODES).c_str());
-                    prvMetaData.setNodes(nodes);
+                    prvMetaData->setNodes(nodes);
                     vector<int> * cpus = new vector<int>();
                     temp=*tokensIterator;
                     tokensIterator++;
@@ -59,7 +59,7 @@ void prv2paje::PrvParser::parse()
                     for (int i=0; i<tokensTemp.size(); i++){
                         cpus->push_back(atoi(tokensTemp.operator [](i).c_str()));
                     }
-                    prvMetaData.setCpus(cpus);
+                    prvMetaData->setCpus(cpus);
                     //drop what follows, not necessary to rebuild the hierarchy
                     //...
                     //saving metadata

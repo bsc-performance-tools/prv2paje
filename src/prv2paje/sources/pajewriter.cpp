@@ -45,10 +45,10 @@ void prv2paje::PajeWriter::definePajeContainers()
 void prv2paje::PajeWriter::definePajeStates()
 {
     poti_DefineStateType(PAJE_PRVSTATE_ALIAS, PAJE_CONTAINER_NAME_THREAD, PAJE_PRVSTATE_NAME);
-    for (auto const &it : pcfParser->getPcfStates()->getValues()){
+    for (auto const &it : *(pcfParser->getPcfStates()->getValues())){
         char* alias;
         sprintf(alias, "%d", it.first);
-        char* name=it.second.c_str();
+        const char* name=it.second.c_str();
         char* color;
         sprintf(color, "%f %f %f", (float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getR()/255,
                 (float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getG()/255,
@@ -71,22 +71,22 @@ void prv2paje::PajeWriter::definePajeStates()
     **/
 }
 
-PcfParser *PajeWriter::getPcfParser() const
+prv2paje::PcfParser *prv2paje::PajeWriter::getPcfParser() const
 {
     return pcfParser;
 }
 
-void PajeWriter::setPcfParser(PcfParser *value)
+void prv2paje::PajeWriter::setPcfParser(PcfParser *value)
 {
     pcfParser = value;
 }
 
-PrvMetaData *PajeWriter::getPrvMetaData() const
+prv2paje::PrvMetaData *prv2paje::PajeWriter::getPrvMetaData() const
 {
     return prvMetaData;
 }
 
-void PajeWriter::setPrvMetaData(PrvMetaData *value)
+void prv2paje::PajeWriter::setPrvMetaData(PrvMetaData *value)
 {
     prvMetaData = value;
 }

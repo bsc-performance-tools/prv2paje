@@ -166,32 +166,27 @@ void prv2paje::PcfParser::parse(){
     }
 }
 
-vector<map<int, PcfValue *> *> * prv2paje::PcfParser::getPcfValues() const
+vector<map<int, prv2paje::PcfValue *> *> * prv2paje::PcfParser::getPcfValues() const
 {
     return pcfValues;
 }
 
-PcfGradient * prv2paje::PcfParser::getPcfGradient() const
+prv2paje::PcfGradient * prv2paje::PcfParser::getPcfGradient() const
 {
     return pcfGradient;
 }
 
-map<int, PcfEvents *> * prv2paje::PcfParser::getPcfEvents() const
+map<int, prv2paje::PcfEvents *> * prv2paje::PcfParser::getPcfEvents() const
 {
     return pcfEvents;
 }
 
-PcfStates * prv2paje::PcfParser::getPcfStates() const
+prv2paje::PcfStates * prv2paje::PcfParser::getPcfStates() const
 {
     return pcfStates;
 }
 
-map<string, PcfOptions *> * prv2paje::PcfParser::getPcfOptions() const
+map<string, prv2paje::PcfOptions *> * prv2paje::PcfParser::getPcfOptions() const
 {
     return pcfOptions;
-}
-
-void prv2paje::PcfParser::setPcfOptions(map<string, PcfOptions *> *value)
-{
-    pcfOptions = value;
 }

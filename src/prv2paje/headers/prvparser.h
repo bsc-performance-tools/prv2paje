@@ -34,7 +34,7 @@ namespace prv2paje{
         ifstream* prvStream;
         PajeWriter* pajeWriter;
         PcfParser* pcfParser;
-        PrvMetaData prvMetaData;
+        PrvMetaData* prvMetaData;
     };
 
 }
