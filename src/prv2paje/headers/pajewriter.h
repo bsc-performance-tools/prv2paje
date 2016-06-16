@@ -1,7 +1,10 @@
 #ifndef PAJEWRITER_H
 #define PAJEWRITER_H
 
+#include <cstdlib>
 #include <iostream>
+#include <ctime>
+
 #include <fstream>
 #include <map>
 #include <poti.h>
@@ -9,6 +12,7 @@
 #include "config.h"
 #include "prvmetadata.h"
 #include "pcfparser.h"
+#include "pajepending.h"
 
 using namespace std;
 
@@ -20,10 +24,11 @@ namespace prv2paje{
         PajeWriter(string pajePath);
         ~PajeWriter();
         void pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, int>* events);
-        void pushState(int cpu, int app, int task, int thread, long startTimstamp, long endTimestamp, int type);
+        void pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, int value);
         void generatePajeHeader();
-        void definePajeContainers();
-        void definePajeStates();
+        void defineAndCreatePajeContainers();
+        void definePajeEvents();
+        void removeAllContainers();
         PrvMetaData *getPrvMetaData() const;
         void setPrvMetaData(PrvMetaData *value);
 
@@ -31,9 +36,13 @@ namespace prv2paje{
         void setPcfParser(PcfParser *value);
 
     private:
+        checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
+
         string pajePath;
         PrvMetaData *prvMetaData;
         PcfParser *pcfParser;
+        PajePending pajePending;
+        vector<map<int, map<int, map<int, bool > > > > containerChain;
     };
 
 }
