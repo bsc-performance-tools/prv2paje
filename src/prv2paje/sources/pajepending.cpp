@@ -13,14 +13,18 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEvent *paje
 
 void prv2paje::PajePending::pushPendingEvents(long int timestamp)
 {
-    for (PajePendingEvent* it: pajePendingEvents){
-        if (it->getTimestamp()>timestamp){
+    list<PajePendingEvent*> toDelete;
+    for (auto it =pajePendingEvents.begin(); it!=pajePendingEvents.end(); it++){
+        if ((*it)->getTimestamp()>timestamp){
             break;
         }
-        if (it->className().compare("PajePendingEndState")==0){
-            poti_PopState  (it->getTimestamp(), it->getContainer().c_str(), it->getType().c_str());
+        if ((*it)->className().compare("PajePendingEndState")==0){
+            poti_PopState  ((*it)->getTimestamp(), (*it)->getContainer().c_str(), (*it)->getType().c_str());
         }
-        pajePendingEvents.remove(it);
+        toDelete.push_back(*it);
+        it=pajePendingEvents.erase(it);
+    }
+    for (PajePendingEvent* it: toDelete){
         delete it;
     }
 }

@@ -11,14 +11,14 @@ prv2paje::PajeWriter::~PajeWriter()
 
 }
 
-void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, int> *events)
+void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, long> *events)
 {
     checkContainerChain(timestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
     pajePending.pushPendingEvents(timestamp);
     for (auto &it: *events){
         int type = it.first;
-        int value= it.second;
+        long value= it.second;
         string typeString = to_string(type);
         if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
             if (value==PCF_EVENT_STATE_VALUE_END){
@@ -33,7 +33,7 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, lo
     }
 }
 
-void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, int value)
+void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, long value)
 {
     checkContainerChain(startTimestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
@@ -52,7 +52,7 @@ void prv2paje::PajeWriter::generatePajeHeader()
     if (!file){
       cerr<<"Error, cannot generate "<<pajePath<<endl;
     }
-    cerr<<"Poti_init:"<<poti_init(file)<<endl;
+    int err=poti_init(file);
     poti_header(0, 0);
     //TODO manage old paje format, see https://github.com/schnorr/poti/tree/master/examples
 }
@@ -90,33 +90,31 @@ void prv2paje::PajeWriter::definePajeEvents()
     srand(time(0));
     poti_DefineStateType(PAJE_PRVSTATE_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVSTATE_NAME);
     for (auto const &it : *(pcfParser->getPcfStates()->getValues())){
-        char* alias;
-        sprintf(alias, "%d", it.first);
-        const char* name=it.second.c_str();
-        char* color;
-        sprintf(color, "%f %f %f", (float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getR()/255,
-                (float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getG()/255,
-                (float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getB()/255);
-        poti_DefineEntityValue(alias, PAJE_PRVSTATE_NAME, name, color);
+        string alias=to_string(it.first);
+        string name=string("\"")+it.second+string("\"");
+        string color= to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getR()/255)+string(" ")+
+                      to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getG()/255)+string(" ")+
+                      to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getB()/255);
+        poti_DefineEntityValue(alias.c_str(), PAJE_PRVSTATE_NAME, name.c_str(), color.c_str());
     }
     for (auto const &it : *(pcfParser->getPcfEvents())){
-        char* alias;
-        sprintf(alias, "%d", it.first);
-        const char* name=it.second->getLabel().c_str();
+        string alias=to_string(it.first);
+        string name=it.second->getLabel();
         if (it.second->getEventType()==State){
-            poti_DefineStateType(alias, PAJE_CONTAINER_DEF_NAME_THREAD, name);
+            poti_DefineStateType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str());
             for (auto const &it2 : *(it.second->getValues())){
-                char* alias2;
-                sprintf(alias2, "%d", it2.first);
-                const char* name2=it2.second->getShortLabel().c_str();
-                char* color;
-                sprintf(color, "%f %f %f", (float) rand()/RAND_MAX, (float) rand()/RAND_MAX, (float) rand()/RAND_MAX);
-                poti_DefineEntityValue(alias2, alias, name2, color);
+                string alias2=to_string(it2.first);
+                string name2=it2.second->getShortLabel();
+                string color= to_string((float) rand()/RAND_MAX)+string(" ")+
+                              to_string((float) rand()/RAND_MAX)+string(" ")+
+                              to_string((float) rand()/RAND_MAX);
+                poti_DefineEntityValue(alias2.c_str(), alias.c_str(), name2.c_str(), color.c_str());
             }
         }else if (it.second->getEventType()==Variable){
-            char* color;
-            sprintf(color, "%f %f %f", (float) rand()/RAND_MAX, (float) rand()/RAND_MAX, (float) rand()/RAND_MAX);
-            poti_DefineVariableType(alias, PAJE_CONTAINER_DEF_NAME_THREAD, name, color);
+            string color= to_string((float) rand()/RAND_MAX)+string(" ")+
+                          to_string((float) rand()/RAND_MAX)+string(" ")+
+                          to_string((float) rand()/RAND_MAX);
+            poti_DefineVariableType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str(), color.c_str());
         }
     }
 }
@@ -143,11 +141,11 @@ void prv2paje::PajeWriter::finalize()
     int it=0;
     for (i=0; i<prvMetaData->getNodes(); i++){
         string alias(PAJE_CONTAINER_ALIAS_NODE_PREFIX);
-        alias+=(i+1);
+        alias+=to_string(i+1);
         for (int j=0; j<prvMetaData->getCpus()->operator [](i); j++){
             it++;
             string alias2(PAJE_CONTAINER_ALIAS_CPU_PREFIX);
-            alias2+=it;
+            alias2+=to_string(it);
             poti_DestroyContainer (prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
         }
         poti_DestroyContainer (prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
@@ -185,7 +183,7 @@ void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int 
     }
     if (containerChain.operator [](cpu-1).operator [](app).operator [](task).count(thread)==0){
         containerChain[cpu-1][app][task][thread]=true;
-        string name=PAJE_CONTAINER_NAME_THREAD_PREFIX+thread;
+        string name=PAJE_CONTAINER_NAME_THREAD_PREFIX+to_string(thread);
         string alias=to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task);
         string parent=alias;
         alias=alias+string(".")+to_string(thread);

@@ -31,11 +31,9 @@ int main(int argc, char* argv[])
         return RETURN_ERR_PAJE;
     }
 
-    cout<<"Parsing configuration file..."<<endl;
+    cout<<"Parsing configuration file"<<endl;
     PcfParser *pcfParser = new PcfParser(paraverFileManager.getPcfStream());
     pcfParser->parse();
-    cout<<"Done"<<endl;
-    cout<<"--------------------------------------- "<<endl;
     PajeWriter *pajeWriter = new PajeWriter(pajeFileManager.getPajePath());
     PrvParser *prvParser = new PrvParser(paraverFileManager.getPrvStream(),pcfParser, pajeWriter);
     cout<<"Parsing paraver trace file and generating paje trace file"<<endl;

@@ -20,14 +20,14 @@ void prv2paje::PrvParser::parse()
     if (prvStream){
         while(getline(*prvStream,line)){
             lineNumber++;
-            //cout<<"Line: "<<lineNumber<<endl;
+            cout<<"Line: "<<lineNumber<<endl;
             replace(line.begin(), line.end(), '\t', ' ');
             std::size_t found = line.find_first_of("(");
             if ((found!=std::string::npos)){
                 found = line.find_first_of("a", found+1);
             }
             if ((found!=std::string::npos)&&(line[found+1]=='t')&&(line[found+5]==':')){
-                line[found+5]='h';
+                line[found+5]='*';
             }
             replace(line.begin(), line.end(), PRV_HEADER_QUOTE_IN_CHAR, GENERIC_SEP_CHAR);
             replace(line.begin(), line.end(), PRV_HEADER_QUOTE_OUT_CHAR, GENERIC_SEP_CHAR);
@@ -41,6 +41,7 @@ void prv2paje::PrvParser::parse()
                     cout<<"---Parsing Header"<<endl;
                     string temp=*tokensIterator;
                     erase_all(temp, GENERIC_SEP);
+                    replace(temp.begin(), temp.end(), '*', ':');
                     prvMetaData->setComment(temp);
                     tokensIterator++;
                     cout<<"------Comment: "<<temp<<endl;
@@ -60,7 +61,6 @@ void prv2paje::PrvParser::parse()
                     cout<<"------Duration: "<<prvMetaData->getDuration()<<" "<<prvMetaData->getTimeUnit()<<endl;
                     //nodes"<cpu>"
                     temp=*tokensIterator;
-                    //cout<<"------Node line: "<<temp<<endl;
                     tokensIterator++;
                     //nodes;<cpu>;
                     tokensTemp.clear();
@@ -70,7 +70,7 @@ void prv2paje::PrvParser::parse()
                     prvMetaData->setNodes(nodes);
                     cout<<"------Node number: "<<prvMetaData->getNodes()<<endl;
                     vector<int> * cpus = new vector<int>();
-                    cout<<"------CPU: "<< temp<<endl;
+                    cout<<"------CPU: "<<endl;
                     temp=tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_CPUS);
                     split(tokensTemp, temp, is_any_of(PRV_HEADER_SEP_HW_CPUS));
                     for (int i=0; i<tokensTemp.size(); i++){
@@ -88,23 +88,24 @@ void prv2paje::PrvParser::parse()
                     pajeWriter->setPcfParser(pcfParser);
                     cout<<"------Generating header"<<endl;
                     pajeWriter->generatePajeHeader();
-                    cout<<"------Define and create paje containers"<<endl;
+                    cout<<"------Define and create Paje containers"<<endl;
                     pajeWriter->defineAndCreatePajeContainers();
                     cout<<"------Define and create Paje event types"<<endl;
                     pajeWriter->definePajeEvents();
                     cout<<"---Done"<<endl;
-                }else{
                     mode=Body;
+                    cout<<"---Parsing Body"<<endl;
+                }else{
                     string eventType=*tokensIterator;
                     tokensIterator++;
                     //communicator
-                    if (eventType.compare(PRV_BODY_COMMUNICATOR)){
+                    if (eventType.compare(PRV_BODY_COMMUNICATOR)==0){
                         //do nothing TODO, low priority...
                     //communications
-                    }else if (eventType.compare(PRV_BODY_COMMUNICATION)){
+                    }else if (eventType.compare(PRV_BODY_COMMUNICATION)==0){
                         //TODO
                     //events
-                    }else if (eventType.compare(PRV_BODY_EVENTS)){
+                    }else if (eventType.compare(PRV_BODY_EVENTS)==0){
                         string temp=*tokensIterator;
                         tokensIterator++;
                         int cpu=atoi(temp.c_str());
@@ -120,19 +121,19 @@ void prv2paje::PrvParser::parse()
                         temp=*tokensIterator;
                         tokensIterator++;
                         long timestamp=stol(temp);
-                        map<int, int>* events=new map<int, int>();
+                        map<int, long>* events=new map<int, long>();
                         for (; tokensIterator!=tokens.end();){
                             temp=*tokensIterator;
                             tokensIterator++;
                             int id=atoi(temp.c_str());
                             temp=*tokensIterator;
                             tokensIterator++;
-                            int value=atoi(temp.c_str());
+                            long value=stol(temp);
                             events->operator [](id)=value;
                         }
                         pajeWriter->pushEvents(cpu, app, task, thread, timestamp, events);
                         delete events;
-                    }else if (eventType.compare(PRV_BODY_STATE)){
+                    }else if (eventType.compare(PRV_BODY_STATE)==0){
                         string temp=*tokensIterator;
                         tokensIterator++;
                         int cpu=atoi(temp.c_str());
@@ -153,12 +154,11 @@ void prv2paje::PrvParser::parse()
                         long endTimestamp=stol(temp);
                         temp=*tokensIterator;
                         tokensIterator++;
-                        int type=atoi(temp.c_str());
+                        long type=stol(temp);
                         pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, type);
                     }
                 }
-            }
-            pajeWriter->finalize();
-        }
+            } 
+        }pajeWriter->finalize();
     }
 }
