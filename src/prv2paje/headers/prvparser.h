@@ -28,9 +28,10 @@ namespace prv2paje{
     {
     public:
         PrvParser(ifstream* prvStream, PcfParser* pcfParser, PajeWriter* pajeWriter);
+        ~PrvParser();
+        void parse();
     private:
         enum Mode{Header, Body};
-        void parse();
         ifstream* prvStream;
         PajeWriter* pajeWriter;
         PcfParser* pcfParser;

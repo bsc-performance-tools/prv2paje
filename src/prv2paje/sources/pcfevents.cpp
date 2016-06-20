@@ -1,9 +1,5 @@
 #include "pcfevents.h"
 
-prv2paje::PcfEvents::PcfEvents()
-{
-
-}
 
 prv2paje::PcfEvents::PcfEvents(int gradient, int type):gradient(gradient), type(type), label("")
 {

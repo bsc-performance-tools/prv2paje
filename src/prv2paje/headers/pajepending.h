@@ -15,9 +15,8 @@ namespace prv2paje{
     {
     public:
         PajePending();
-        void addPajePendingEvent(PajePendingEvent *pajePendingEndState);
         void addPajePendingEvent(PajePendingEvent *pajePendingEvent);
-        void pushAllPendingEvents(long int timestamp);
+        void pushPendingEvents(long int timestamp);
     private:
         list<PajePendingEvent*> pajePendingEvents;
     };

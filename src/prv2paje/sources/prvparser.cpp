@@ -2,9 +2,14 @@
 
 
 prv2paje::PrvParser::PrvParser(ifstream *prvStream, prv2paje::PcfParser *pcfParser, prv2paje::PajeWriter *pajeWriter):
-    prvStream(prvStream), pcfParser(pcfParser), pajeWriter(pajeWriter)
+    prvStream(prvStream), pcfParser(pcfParser), pajeWriter(pajeWriter), prvMetaData(new PrvMetaData())
 {
 
+}
+
+prv2paje::PrvParser::~PrvParser()
+{
+    delete prvMetaData;
 }
 
 void prv2paje::PrvParser::parse()
@@ -15,9 +20,17 @@ void prv2paje::PrvParser::parse()
     if (prvStream){
         while(getline(*prvStream,line)){
             lineNumber++;
+            //cout<<"Line: "<<lineNumber<<endl;
             replace(line.begin(), line.end(), '\t', ' ');
-            replace(line.begin(), line.end(), PRV_HEADER_QUOTE_IN_CHAR, GENERIC_QUOTE_CHAR);
-            replace(line.begin(), line.end(), PRV_HEADER_QUOTE_OUT_CHAR, GENERIC_QUOTE_CHAR);
+            std::size_t found = line.find_first_of("(");
+            if ((found!=std::string::npos)){
+                found = line.find_first_of("a", found+1);
+            }
+            if ((found!=std::string::npos)&&(line[found+1]=='t')&&(line[found+5]==':')){
+                line[found+5]='h';
+            }
+            replace(line.begin(), line.end(), PRV_HEADER_QUOTE_IN_CHAR, GENERIC_SEP_CHAR);
+            replace(line.begin(), line.end(), PRV_HEADER_QUOTE_OUT_CHAR, GENERIC_SEP_CHAR);
             trim_all(line);
             if (!line.empty()){
                 escaped_list_separator<char> sep(GENERIC_ESCAPE_CHAR, PRV_HEADER_SEP_MAIN_CHAR, GENERIC_QUOTE_CHAR);
@@ -25,10 +38,13 @@ void prv2paje::PrvParser::parse()
                 tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens.begin();
                 if (mode==Header){
                     //comment
+                    cout<<"---Parsing Header"<<endl;
                     string temp=*tokensIterator;
-                    tokensIterator++;
+                    erase_all(temp, GENERIC_SEP);
                     prvMetaData->setComment(temp);
-                    //duration_unit
+                    tokensIterator++;
+                    cout<<"------Comment: "<<temp<<endl;
+                    //duration_unit                
                     temp=*tokensIterator;
                     tokensIterator++;
                     vector<string> tokensTemp;
@@ -41,30 +57,42 @@ void prv2paje::PrvParser::parse()
                     }else{
                         prvMetaData->setTimeUnit("");
                     }
+                    cout<<"------Duration: "<<prvMetaData->getDuration()<<" "<<prvMetaData->getTimeUnit()<<endl;
                     //nodes"<cpu>"
                     temp=*tokensIterator;
+                    //cout<<"------Node line: "<<temp<<endl;
                     tokensIterator++;
-                    replace(temp.begin(), temp.end(), GENERIC_QUOTE_CHAR, GENERIC_SEP_CHAR);
                     //nodes;<cpu>;
                     tokensTemp.clear();
                     split(tokensTemp, temp, is_any_of(GENERIC_SEP));
                     //nodes
                     int nodes=atoi(tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_NODES).c_str());
                     prvMetaData->setNodes(nodes);
+                    cout<<"------Node number: "<<prvMetaData->getNodes()<<endl;
                     vector<int> * cpus = new vector<int>();
-                    temp=*tokensIterator;
-                    tokensIterator++;
-                    tokensTemp.clear();
+                    cout<<"------CPU: "<< temp<<endl;
+                    temp=tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_CPUS);
                     split(tokensTemp, temp, is_any_of(PRV_HEADER_SEP_HW_CPUS));
                     for (int i=0; i<tokensTemp.size(); i++){
                         cpus->push_back(atoi(tokensTemp.operator [](i).c_str()));
+                        cout<<"---------Node: "<<i<<", CPU number: "<<cpus->at(i)<<endl;
                     }
                     prvMetaData->setCpus(cpus);
                     //drop what follows, not necessary to rebuild the hierarchy
                     //...
                     //saving metadata
+                    cout<<"---Initializing writer"<<endl;
+                    cout<<"------Storing metadata"<<endl;
                     pajeWriter->setPrvMetaData(prvMetaData);
+                    cout<<"------Storing event types"<<endl;
+                    pajeWriter->setPcfParser(pcfParser);
+                    cout<<"------Generating header"<<endl;
                     pajeWriter->generatePajeHeader();
+                    cout<<"------Define and create paje containers"<<endl;
+                    pajeWriter->defineAndCreatePajeContainers();
+                    cout<<"------Define and create Paje event types"<<endl;
+                    pajeWriter->definePajeEvents();
+                    cout<<"---Done"<<endl;
                 }else{
                     mode=Body;
                     string eventType=*tokensIterator;
@@ -130,6 +158,7 @@ void prv2paje::PrvParser::parse()
                     }
                 }
             }
+            pajeWriter->finalize();
         }
     }
 }

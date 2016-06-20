@@ -12,5 +12,5 @@ prv2paje::PajePendingEndState::PajePendingEndState(long timestamp):PajePendingEv
 
 string prv2paje::PajePendingEndState::className()
 {
-    return "PajePendingEndState"
+    return "PajePendingEndState";
 }

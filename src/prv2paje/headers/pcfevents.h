@@ -14,7 +14,6 @@ namespace prv2paje{
     class PcfEvents
     {
     public:
-        PcfEvents();
         PcfEvents(int gradient, int type);
         PcfEvents(int gradient, int type, string label);
         int getGradient() const;

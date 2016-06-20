@@ -9,7 +9,7 @@ using namespace std;
 
 namespace prv2paje{
 
-    class PajePendingEndState: PajePendingEvent
+    class PajePendingEndState: public PajePendingEvent
     {
     public:
         PajePendingEndState();

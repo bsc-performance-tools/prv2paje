@@ -28,7 +28,7 @@ namespace prv2paje{
         void generatePajeHeader();
         void defineAndCreatePajeContainers();
         void definePajeEvents();
-        void removeAllContainers();
+        void finalize();
         PrvMetaData *getPrvMetaData() const;
         void setPrvMetaData(PrvMetaData *value);
 
@@ -36,7 +36,7 @@ namespace prv2paje{
         void setPcfParser(PcfParser *value);
 
     private:
-        checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
+        void checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
 
         string pajePath;
         PrvMetaData *prvMetaData;
