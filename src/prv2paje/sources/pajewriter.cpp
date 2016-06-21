@@ -130,8 +130,7 @@ void prv2paje::PajeWriter::definePajeEvents()
             string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX);
-            string name2="\""+name+"\"";
-            poti_DefineVariableType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name2.c_str(), color.c_str());
+            poti_DefineVariableType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str(), color.c_str());
         }
     }
 }
