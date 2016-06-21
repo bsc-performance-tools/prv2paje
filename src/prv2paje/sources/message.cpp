@@ -28,7 +28,9 @@ void prv2paje::Message::Info(string message, int level)
     for (int i=0; i<level; i++){
         cout<<"---";
     }
-    cout<<" ";
+    if (level!=0){
+        cout<<" ";
+    }
     cout<<message<<endl;
 #endif
 }
