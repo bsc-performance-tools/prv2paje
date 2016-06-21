@@ -46,7 +46,7 @@ void prv2paje::PrvParser::parse()
                     replace(temp.begin(), temp.end(), '*', ':');
                     prvMetaData->setComment(temp);
                     tokensIterator++;
-                    Message::Info("Comment:" +temp, 3);
+                    Message::Info("Comment: " +temp, 3);
                     //duration_unit                
                     temp=*tokensIterator;
                     tokensIterator++;
@@ -60,8 +60,8 @@ void prv2paje::PrvParser::parse()
                     }else{
                         prvMetaData->setTimeUnit("");
                     }
-                    Message::Info("Duration:" +to_string(prvMetaData->getDuration())+", Unit: "+prvMetaData->getTimeUnit(), 3);
-                    Message::Info("Time Divider:" +to_string(prvMetaData->getTimeDivider()), 3);
+                    Message::Info("Duration: " +to_string(prvMetaData->getDuration())+", Unit: "+prvMetaData->getTimeUnit(), 3);
+                    Message::Info("Time Divider: " +to_string(prvMetaData->getTimeDivider()), 3);
                     //nodes"<cpu>"
                     temp=*tokensIterator;
                     tokensIterator++;
@@ -71,7 +71,7 @@ void prv2paje::PrvParser::parse()
                     //nodes
                     int nodes=atoi(tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_NODES).c_str());
                     prvMetaData->setNodes(nodes);
-                    Message::Info("Number of nodes:" +to_string(prvMetaData->getNodes()), 3);
+                    Message::Info("Number of nodes: " +to_string(prvMetaData->getNodes()), 3);
                     vector<int> * cpus = new vector<int>();
                     Message::Info("CPUS:", 3);
                     temp=tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_CPUS);

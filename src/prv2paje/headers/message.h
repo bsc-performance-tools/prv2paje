@@ -5,6 +5,24 @@
 #include <fstream>
 #include <string>
 
+#define MESSAGE_INFO
+
+#ifdef MESSAGE_DEBUG
+#define MESSAGE_INFO
+#endif
+
+#ifdef MESSAGE_INFO
+#define MESSAGE_WARNING
+#endif
+
+#ifdef MESSAGE_WARNING
+#define MESSAGE_ERROR
+#endif
+
+#ifdef MESSAGE_ERROR
+#define MESSAGE_CRITICAL
+#endif
+
 using namespace std;
 
 namespace prv2paje{

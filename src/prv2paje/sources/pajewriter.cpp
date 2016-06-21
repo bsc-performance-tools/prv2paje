@@ -26,7 +26,7 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
             unknownEvent->setLabel(to_string(type));
             pcfParser->getPcfEvents()->operator [](type)=unknownEvent;
             Message::Warning("line " + to_string(lineNumber)+ ". Undefined event type. Type: "+to_string(type)+" Value: "+value+
-                            ". Unable to determine its semantic. Will be defined as a variable. We recommend to add this event type in the trace pcf file.");
+                            ". Unable to determine its semantics. Will be defined as a variable.");
             string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX);
@@ -115,12 +115,12 @@ void prv2paje::PajeWriter::definePajeEvents()
     }
     for (auto const &it : *(pcfParser->getPcfEvents())){
         string alias=to_string(it.first);
-        string name="\""+it.second->getLabel()+"\"";
+        string name=it.second->getLabel();
         if (it.second->getEventType()==State){
             poti_DefineStateType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str());
             for (auto const &it2 : *(it.second->getValues())){
                 string alias2=to_string(it2.first);
-                string name2=it2.second->getLabel();
+                string name2="\""+it2.second->getLabel()+"\"";
                 string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                               to_string((float) rand()/RAND_MAX)+string(" ")+
                               to_string((float) rand()/RAND_MAX);
@@ -130,7 +130,8 @@ void prv2paje::PajeWriter::definePajeEvents()
             string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX);
-            poti_DefineVariableType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str(), color.c_str());
+            string name2="\""+name+"\"";
+            poti_DefineVariableType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name2.c_str(), color.c_str());
         }
     }
 }
