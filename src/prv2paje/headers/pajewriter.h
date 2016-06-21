@@ -23,8 +23,8 @@ namespace prv2paje{
     public:
         PajeWriter(string pajePath);
         ~PajeWriter();
-        void pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, long>* events);
-        void pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, long value);
+        void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events);
+        void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value);
         void generatePajeHeader();
         void defineAndCreatePajeContainers();
         void definePajeEvents();

@@ -1,6 +1,6 @@
 #include "../headers/prvmetadata.h"
 
-prv2paje::PrvMetaData::PrvMetaData()
+prv2paje::PrvMetaData::PrvMetaData():timeDivider(1.0)
 {
 
 }
@@ -20,6 +20,11 @@ long prv2paje::PrvMetaData::getDuration() const
     return duration;
 }
 
+double prv2paje::PrvMetaData::getStandardDuration() const
+{
+    return double (duration)/timeDivider;
+}
+
 void prv2paje::PrvMetaData::setDuration(long value)
 {
     duration = value;
@@ -33,6 +38,15 @@ string prv2paje::PrvMetaData::getTimeUnit() const
 void prv2paje::PrvMetaData::setTimeUnit(const string &value)
 {
     timeUnit = value;
+    if (timeUnit.compare(PRV_TIME_UNIT_SECONDS)){
+        timeDivider=PAJE_TIME_DIVIDER_SECONDS;
+    }else if (timeUnit.compare(PRV_TIME_UNIT_MILISECONDS)){
+        timeDivider=PAJE_TIME_DIVIDER_MILISECONDS;
+    }else if (timeUnit.compare(PRV_TIME_UNIT_MICROSECONDS)){
+        timeDivider=PAJE_TIME_DIVIDER_MICROSECONDS;
+    }else if (timeUnit.compare(PRV_TIME_UNIT_NANOSECONDS)){
+        timeDivider=PAJE_TIME_DIVIDER_NANOSECONDS;
+    }
 }
 
 int prv2paje::PrvMetaData::getApplications() const
@@ -73,4 +87,9 @@ vector<int> *prv2paje::PrvMetaData::getCpus() const
 void prv2paje::PrvMetaData::setCpus(vector<int> *value)
 {
     cpus = value;
+}
+
+double prv2paje::PrvMetaData::getTimeDivider() const
+{
+    return timeDivider;
 }

@@ -20,7 +20,9 @@ void prv2paje::PrvParser::parse()
     if (prvStream){
         while(getline(*prvStream,line)){
             lineNumber++;
-            cout<<"Line: "<<lineNumber<<endl;
+            if (lineNumber%10000==0){
+                cout<<"------"<<lineNumber<<" lines processed"<<endl;
+            }
             replace(line.begin(), line.end(), '\t', ' ');
             std::size_t found = line.find_first_of("(");
             if ((found!=std::string::npos)){
@@ -120,16 +122,15 @@ void prv2paje::PrvParser::parse()
                         int thread=atoi(temp.c_str());
                         temp=*tokensIterator;
                         tokensIterator++;
-                        long timestamp=stol(temp);
-                        map<int, long>* events=new map<int, long>();
+                        double timestamp=stoll(temp)/prvMetaData->getTimeDivider();
+                        map<int, string>* events=new map<int, string>();
                         for (; tokensIterator!=tokens.end();){
                             temp=*tokensIterator;
                             tokensIterator++;
                             int id=atoi(temp.c_str());
                             temp=*tokensIterator;
                             tokensIterator++;
-                            long value=stol(temp);
-                            events->operator [](id)=value;
+                            events->operator [](id)=temp;
                         }
                         pajeWriter->pushEvents(cpu, app, task, thread, timestamp, events);
                         delete events;
@@ -148,14 +149,12 @@ void prv2paje::PrvParser::parse()
                         int thread=atoi(temp.c_str());
                         temp=*tokensIterator;
                         tokensIterator++;
-                        long startTimestamp=stol(temp);
+                        double startTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
                         temp=*tokensIterator;
                         tokensIterator++;
-                        long endTimestamp=stol(temp);
+                        double endTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
                         temp=*tokensIterator;
-                        tokensIterator++;
-                        long type=stol(temp);
-                        pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, type);
+                        pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp);
                     }
                 }
             } 

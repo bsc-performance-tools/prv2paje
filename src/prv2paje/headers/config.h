@@ -60,7 +60,8 @@
 #define PRV_BODY_FIELD_STATE_ENDTIMESTAMP           6
 #define PRV_BODY_FIELD_STATE_TYPE                   7
 
-#define PCF_EVENT_STATE_VALUE_END                   0
+#define PCF_EVENT_STATE_VALUE_END_STRING           "0"
+#define PCF_EVENT_STATE_VALUE_END                   atoi(PCF_EVENT_STATE_VALUE_END_STRING)
 
 #define PAJE_CONTAINER_DEF_NAME_ROOT                "ROOT"
 #define PAJE_CONTAINER_DEF_NAME_NODE                "NODE"
@@ -90,6 +91,22 @@
 #define PAJE_CONTAINER_ALIAS_ROOT                   PAJE_CONTAINER_NAME_ROOT
 #define PAJE_CONTAINER_ALIAS_NODE_PREFIX            PAJE_CONTAINER_NAME_NODE_PREFIX
 #define PAJE_CONTAINER_ALIAS_CPU_PREFIX             PAJE_CONTAINER_NAME_CPU_PREFIX
+
+#define PRV_TIME_UNIT_SECONDS                       "s"
+#define PRV_TIME_UNIT_MILISECONDS                   "ms"
+#define PRV_TIME_UNIT_MICROSECONDS                  "us"
+#define PRV_TIME_UNIT_NANOSECONDS                   "ns"
+#define PRV_TIME_UNIT_MINUTES                       "m"
+#define PRV_TIME_UNIT_HOURS                         "h"
+
+#define PAJE_TIME_DIVIDER_SECONDS                   1.0
+#define PAJE_TIME_DIVIDER_MILISECONDS               1000.0
+#define PAJE_TIME_DIVIDER_MICROSECONDS              1000000.0
+#define PAJE_TIME_DIVIDER_NANOSECONDS               10000000000.0
+#define PAJE_TIME_DIVIDER_MINUTES                   (1.0/60.0)
+#define PAJE_TIME_DIVIDER_HOURS                     (1.0/3600.0)
+
+
 
 #define RETURN_OK                                   0
 #define RETURN_ERR_PRV                              1

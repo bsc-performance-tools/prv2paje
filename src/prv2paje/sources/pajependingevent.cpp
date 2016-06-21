@@ -5,7 +5,7 @@ prv2paje::PajePendingEvent::PajePendingEvent()
 
 }
 
-prv2paje::PajePendingEvent::PajePendingEvent(long timestamp):timestamp(timestamp)
+prv2paje::PajePendingEvent::PajePendingEvent(double timestamp):timestamp(timestamp)
 {
 
 }
@@ -40,12 +40,12 @@ bool operator!=(const prv2paje::PajePendingEvent &object1, const prv2paje::PajeP
     return object1.getTimestamp()!=object2.getTimestamp();
 }
 
-long prv2paje::PajePendingEvent::getTimestamp() const
+double prv2paje::PajePendingEvent::getTimestamp() const
 {
     return timestamp;
 }
 
-void prv2paje::PajePendingEvent::setTimestamp(long value)
+void prv2paje::PajePendingEvent::setTimestamp(double value)
 {
     timestamp = value;
 }

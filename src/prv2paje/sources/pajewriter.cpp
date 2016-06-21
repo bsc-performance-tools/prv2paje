@@ -11,38 +11,39 @@ prv2paje::PajeWriter::~PajeWriter()
 
 }
 
-void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, long> *events)
+void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string> *events)
 {
     checkContainerChain(timestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
     pajePending.pushPendingEvents(timestamp);
     for (auto &it: *events){
         int type = it.first;
-        long value= it.second;
         string typeString = to_string(type);
-        if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
-            if (value==PCF_EVENT_STATE_VALUE_END){
-                poti_PopState (timestamp, container.c_str(), typeString.c_str());
-            }else{
-                string valueString=to_string(value);
-                poti_PushState (timestamp, container.c_str(), typeString.c_str(), valueString.c_str());
+        string value = it.second;
+        if (pcfParser->getPcfEvents()->count(type)!=0){
+            if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
+                if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)){
+
+                    poti_PopState (timestamp, container.c_str(), typeString.c_str());
+                }else{
+                    poti_PushState (timestamp, container.c_str(), typeString.c_str(), value.c_str());
+                }
+            }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==Variable){
+                poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), stoll(value));
             }
-        }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==Variable){
-            poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), value);
         }
     }
 }
 
-void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, long value)
+void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value)
 {
     checkContainerChain(startTimestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
-    string valueString=to_string(value);
     PajePendingEndState* pajePendingEndState=new PajePendingEndState(endTimestamp);
     pajePendingEndState->setContainer(container);
     pajePendingEndState->setType(PAJE_PRVSTATE_ALIAS);
     pajePending.pushPendingEvents(startTimestamp);
-    poti_PushState (startTimestamp, container.c_str(), PAJE_PRVSTATE_ALIAS, valueString.c_str());
+    poti_PushState (startTimestamp, container.c_str(), PAJE_PRVSTATE_ALIAS, value.c_str());
     pajePending.addPajePendingEvent(pajePendingEndState);
 }
 
@@ -121,7 +122,7 @@ void prv2paje::PajeWriter::definePajeEvents()
 
 void prv2paje::PajeWriter::finalize()
 {
-    pajePending.pushPendingEvents(prvMetaData->getDuration());
+    pajePending.pushPendingEvents(prvMetaData->getStandardDuration());
     int i=0;
     for (auto const cpu: containerChain){
         int cpu_index=i++ +1;
@@ -129,13 +130,13 @@ void prv2paje::PajeWriter::finalize()
             for (auto &task: app.second){
                 for (auto &thread: task.second){
                     string alias=to_string(cpu_index)+string(".")+to_string(app.first)+string(".")+to_string(task.first)+string(".")+to_string(thread.first);
-                    poti_DestroyContainer(prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_THREAD, alias.c_str());
+                    poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_THREAD, alias.c_str());
                 }
                 string alias=to_string(cpu_index)+string(".")+to_string(app.first)+string(".")+to_string(task.first);
-                poti_DestroyContainer(prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_TASK, alias.c_str());
+                poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_TASK, alias.c_str());
             }
             string alias=to_string(cpu_index)+string(".")+to_string(app.first);
-            poti_DestroyContainer(prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_APP, alias.c_str());
+            poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_APP, alias.c_str());
         }
     }
     int it=0;
@@ -146,11 +147,11 @@ void prv2paje::PajeWriter::finalize()
             it++;
             string alias2(PAJE_CONTAINER_ALIAS_CPU_PREFIX);
             alias2+=to_string(it);
-            poti_DestroyContainer (prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
+            poti_DestroyContainer (prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
         }
-        poti_DestroyContainer (prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
+        poti_DestroyContainer (prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
     }
-    poti_DestroyContainer(prvMetaData->getDuration(), PAJE_CONTAINER_DEF_ALIAS_ROOT, PAJE_CONTAINER_ALIAS_ROOT);
+    poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_ROOT, PAJE_CONTAINER_ALIAS_ROOT);
     poti_close();
 }
 

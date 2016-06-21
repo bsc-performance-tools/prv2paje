@@ -11,7 +11,7 @@ namespace prv2paje{
     {
     public:
         PajePendingEvent();
-        PajePendingEvent(long int timestamp);
+        PajePendingEvent(double timestamp);
         friend bool operator> (const PajePendingEvent &object1, const PajePendingEvent &object2);
         friend bool operator<= (const PajePendingEvent &object1, const PajePendingEvent &object2);
         friend bool operator< (const PajePendingEvent &object1, const PajePendingEvent &object2);
@@ -21,8 +21,8 @@ namespace prv2paje{
 
         virtual string className() = 0;
 
-        long getTimestamp() const;
-        void setTimestamp(long value);
+        double getTimestamp() const;
+        void setTimestamp(double value);
 
         string getContainer() const;
         void setContainer(const string &value);
@@ -31,7 +31,7 @@ namespace prv2paje{
         void setType(const string &value);
 
     private:
-        long int timestamp;
+        double timestamp;
         string container;
         string type;
     };

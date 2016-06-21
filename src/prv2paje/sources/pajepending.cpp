@@ -11,7 +11,7 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEvent *paje
     pajePendingEvents.sort();
 }
 
-void prv2paje::PajePending::pushPendingEvents(long int timestamp)
+void prv2paje::PajePending::pushPendingEvents(double timestamp)
 {
     list<PajePendingEvent*> toDelete;
     for (auto it =pajePendingEvents.begin(); it!=pajePendingEvents.end(); it++){
