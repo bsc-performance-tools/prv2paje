@@ -38,13 +38,13 @@ string prv2paje::PrvMetaData::getTimeUnit() const
 void prv2paje::PrvMetaData::setTimeUnit(const string &value)
 {
     timeUnit = value;
-    if (timeUnit.compare(PRV_TIME_UNIT_SECONDS)){
+    if (timeUnit.compare(PRV_TIME_UNIT_SECONDS)==0){
         timeDivider=PAJE_TIME_DIVIDER_SECONDS;
-    }else if (timeUnit.compare(PRV_TIME_UNIT_MILISECONDS)){
+    }else if (timeUnit.compare(PRV_TIME_UNIT_MILISECONDS)==0){
         timeDivider=PAJE_TIME_DIVIDER_MILISECONDS;
-    }else if (timeUnit.compare(PRV_TIME_UNIT_MICROSECONDS)){
+    }else if (timeUnit.compare(PRV_TIME_UNIT_MICROSECONDS)==0){
         timeDivider=PAJE_TIME_DIVIDER_MICROSECONDS;
-    }else if (timeUnit.compare(PRV_TIME_UNIT_NANOSECONDS)){
+    }else if (timeUnit.compare(PRV_TIME_UNIT_NANOSECONDS)==0){
         timeDivider=PAJE_TIME_DIVIDER_NANOSECONDS;
     }
 }

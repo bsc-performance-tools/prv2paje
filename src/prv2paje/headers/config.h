@@ -102,7 +102,7 @@
 #define PAJE_TIME_DIVIDER_SECONDS                   1.0
 #define PAJE_TIME_DIVIDER_MILISECONDS               1000.0
 #define PAJE_TIME_DIVIDER_MICROSECONDS              1000000.0
-#define PAJE_TIME_DIVIDER_NANOSECONDS               10000000000.0
+#define PAJE_TIME_DIVIDER_NANOSECONDS               1000000000.0
 #define PAJE_TIME_DIVIDER_MINUTES                   (1.0/60.0)
 #define PAJE_TIME_DIVIDER_HOURS                     (1.0/3600.0)
 

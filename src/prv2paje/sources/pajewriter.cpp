@@ -11,7 +11,7 @@ prv2paje::PajeWriter::~PajeWriter()
 
 }
 
-void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string> *events)
+void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string> *events, long lineNumber)
 {
     checkContainerChain(timestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
@@ -29,13 +29,19 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
                     poti_PushState (timestamp, container.c_str(), typeString.c_str(), value.c_str());
                 }
             }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==Variable){
-                poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), stoll(value));
+                try{
+                    long long valueLong=stoll(value.c_str());
+                    poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), valueLong);
+                }catch (const std::out_of_range& err) {
+                    cerr << "Line "<< lineNumber<<": error, out of range value; Type: "<<type<<" Value: "<<value<<endl;
+                    cerr << "Event will be thrown"<<endl;
+                }
             }
         }
     }
 }
 
-void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value)
+void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long linenumber)
 {
     checkContainerChain(startTimestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);

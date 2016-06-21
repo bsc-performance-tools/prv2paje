@@ -15,12 +15,12 @@ prv2paje::PrvParser::~PrvParser()
 void prv2paje::PrvParser::parse()
 {
     string line;
-    int lineNumber=0;
+    long lineNumber=0;
     Mode mode=Header;
     if (prvStream){
         while(getline(*prvStream,line)){
             lineNumber++;
-            if (lineNumber%10000==0){
+            if (lineNumber%100000==0){
                 cout<<"------"<<lineNumber<<" lines processed"<<endl;
             }
             replace(line.begin(), line.end(), '\t', ' ');
@@ -61,6 +61,7 @@ void prv2paje::PrvParser::parse()
                         prvMetaData->setTimeUnit("");
                     }
                     cout<<"------Duration: "<<prvMetaData->getDuration()<<" "<<prvMetaData->getTimeUnit()<<endl;
+                    cout<<"------Time Divider: "<<prvMetaData->getTimeDivider()<<endl;
                     //nodes"<cpu>"
                     temp=*tokensIterator;
                     tokensIterator++;
@@ -132,7 +133,7 @@ void prv2paje::PrvParser::parse()
                             tokensIterator++;
                             events->operator [](id)=temp;
                         }
-                        pajeWriter->pushEvents(cpu, app, task, thread, timestamp, events);
+                        pajeWriter->pushEvents(cpu, app, task, thread, timestamp, events, lineNumber);
                         delete events;
                     }else if (eventType.compare(PRV_BODY_STATE)==0){
                         string temp=*tokensIterator;
@@ -154,7 +155,7 @@ void prv2paje::PrvParser::parse()
                         tokensIterator++;
                         double endTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
                         temp=*tokensIterator;
-                        pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp);
+                        pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
                     }
                 }
             } 
