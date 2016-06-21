@@ -13,6 +13,7 @@
 #include "prvmetadata.h"
 #include "pcfparser.h"
 #include "pajepending.h"
+#include "message.h"
 
 using namespace std;
 
@@ -23,8 +24,8 @@ namespace prv2paje{
     public:
         PajeWriter(string pajePath);
         ~PajeWriter();
-        void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events, long linenumber);
-        void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long linenumber);
+        void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events, long lineNumber);
+        void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber);
         void generatePajeHeader();
         void defineAndCreatePajeContainers();
         void definePajeEvents();

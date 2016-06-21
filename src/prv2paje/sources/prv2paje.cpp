@@ -5,41 +5,40 @@
 #include "pcfparser.h"
 #include "prvparser.h"
 #include "pajewriter.h"
+#include "message.h"
 
 using namespace std;
 using namespace prv2paje;
 
 int main(int argc, char* argv[])
 {
-    cout<<"prv2paje version "<<__BUILD_VERSION__<<endl;
+    Message::Info("prv2paje version "+string(__BUILD_VERSION__));
     ArgumentManager argumentManager(argc, argv);
     if (!argumentManager.getValid()){
-        cerr<<"Invalid arguments"<<endl;
+        Message::Critical("invalid arguments");
         argumentManager.usage();
         return RETURN_ERR_PRV;
     }
     ParaverFileManager paraverFileManager(argumentManager.getPrvPath());
     if (!paraverFileManager.getPrvValid()){
-        cerr<<"Paraver trace file cannot be opened"<<endl;
+        Message::Critical("Paraver trace file cannot be opened");
         argumentManager.usage();
         return RETURN_ERR_PCF;
     }
     PajeFileManager pajeFileManager(argumentManager.getPajePath());
     if (!pajeFileManager.getPajeValid()){
-        cerr<<"Paje trace file cannot be created"<<endl;
+        Message::Critical("Pajé trace file cannot be created");
         argumentManager.usage();
         return RETURN_ERR_PAJE;
     }
 
-    cout<<"Parsing configuration file"<<endl;
+    Message::Info("Parsing configuration file",1);
     PcfParser *pcfParser = new PcfParser(paraverFileManager.getPcfStream());
     pcfParser->parse();
     PajeWriter *pajeWriter = new PajeWriter(pajeFileManager.getPajePath());
     PrvParser *prvParser = new PrvParser(paraverFileManager.getPrvStream(),pcfParser, pajeWriter);
-    cout<<"Parsing paraver trace file and generating paje trace file"<<endl;
+    Message::Info("Parsing paraver trace file and generating paje trace file",1);
     prvParser->parse();
-    cout<<"Done"<<endl;
-    cout<<"--------------------------------------- "<<endl;
     delete pajeWriter;
     delete prvParser;
     delete pcfParser;

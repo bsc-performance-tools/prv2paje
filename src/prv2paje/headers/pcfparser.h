@@ -18,7 +18,6 @@
 #include "pcfevents.h"
 #include "pcfgradient.h"
 #include "pcfvalue.h"
-#include "stringutils.h"
 
 using namespace std;
 using namespace boost::algorithm;

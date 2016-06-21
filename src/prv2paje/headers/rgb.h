@@ -6,8 +6,6 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include "stringutils.h"
-
 using namespace std;
 using namespace boost::algorithm;
 

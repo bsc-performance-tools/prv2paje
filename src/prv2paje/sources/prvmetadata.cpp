@@ -1,4 +1,4 @@
-#include "../headers/prvmetadata.h"
+#include "prvmetadata.h"
 
 prv2paje::PrvMetaData::PrvMetaData():timeDivider(1.0)
 {

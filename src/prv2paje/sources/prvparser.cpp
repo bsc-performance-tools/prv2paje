@@ -1,4 +1,4 @@
-#include "../headers/prvparser.h"
+#include "prvparser.h"
 
 
 prv2paje::PrvParser::PrvParser(ifstream *prvStream, prv2paje::PcfParser *pcfParser, prv2paje::PajeWriter *pajeWriter):
@@ -21,14 +21,14 @@ void prv2paje::PrvParser::parse()
         while(getline(*prvStream,line)){
             lineNumber++;
             if (lineNumber%100000==0){
-                cout<<"------"<<lineNumber<<" lines processed"<<endl;
+                Message::Debug(to_string(lineNumber)+ " lines processed");
             }
             replace(line.begin(), line.end(), '\t', ' ');
             std::size_t found = line.find_first_of("(");
-            if ((found!=std::string::npos)){
+            if ((found!=std::string::npos)&&(found+1<line.length())){
                 found = line.find_first_of("a", found+1);
             }
-            if ((found!=std::string::npos)&&(line[found+1]=='t')&&(line[found+5]==':')){
+            if ((found!=std::string::npos)&&(line[found+1]=='t')&&(found+5<line.length())&&(line[found+5]==':')){
                 line[found+5]='*';
             }
             replace(line.begin(), line.end(), PRV_HEADER_QUOTE_IN_CHAR, GENERIC_SEP_CHAR);
@@ -40,13 +40,13 @@ void prv2paje::PrvParser::parse()
                 tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens.begin();
                 if (mode==Header){
                     //comment
-                    cout<<"---Parsing Header"<<endl;
+                    Message::Info("Parsing Header", 2);
                     string temp=*tokensIterator;
                     erase_all(temp, GENERIC_SEP);
                     replace(temp.begin(), temp.end(), '*', ':');
                     prvMetaData->setComment(temp);
                     tokensIterator++;
-                    cout<<"------Comment: "<<temp<<endl;
+                    Message::Info("Comment:" +temp, 3);
                     //duration_unit                
                     temp=*tokensIterator;
                     tokensIterator++;
@@ -60,8 +60,8 @@ void prv2paje::PrvParser::parse()
                     }else{
                         prvMetaData->setTimeUnit("");
                     }
-                    cout<<"------Duration: "<<prvMetaData->getDuration()<<" "<<prvMetaData->getTimeUnit()<<endl;
-                    cout<<"------Time Divider: "<<prvMetaData->getTimeDivider()<<endl;
+                    Message::Info("Duration:" +to_string(prvMetaData->getDuration())+", Unit: "+prvMetaData->getTimeUnit(), 3);
+                    Message::Info("Time Divider:" +to_string(prvMetaData->getTimeDivider()), 3);
                     //nodes"<cpu>"
                     temp=*tokensIterator;
                     tokensIterator++;
@@ -71,33 +71,32 @@ void prv2paje::PrvParser::parse()
                     //nodes
                     int nodes=atoi(tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_NODES).c_str());
                     prvMetaData->setNodes(nodes);
-                    cout<<"------Node number: "<<prvMetaData->getNodes()<<endl;
+                    Message::Info("Number of nodes:" +to_string(prvMetaData->getNodes()), 3);
                     vector<int> * cpus = new vector<int>();
-                    cout<<"------CPU: "<<endl;
+                    Message::Info("CPUS:", 3);
                     temp=tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_CPUS);
                     split(tokensTemp, temp, is_any_of(PRV_HEADER_SEP_HW_CPUS));
                     for (int i=0; i<tokensTemp.size(); i++){
                         cpus->push_back(atoi(tokensTemp.operator [](i).c_str()));
-                        cout<<"---------Node: "<<i<<", CPU number: "<<cpus->at(i)<<endl;
+                        Message::Info("Node: "+to_string(i)+", CPU number: "+to_string(cpus->at(i)), 4);
                     }
                     prvMetaData->setCpus(cpus);
                     //drop what follows, not necessary to rebuild the hierarchy
                     //...
                     //saving metadata
-                    cout<<"---Initializing writer"<<endl;
-                    cout<<"------Storing metadata"<<endl;
+                    Message::Info("Initializing writer", 2);
+                    Message::Info("Storing metadata", 3);
                     pajeWriter->setPrvMetaData(prvMetaData);
-                    cout<<"------Storing event types"<<endl;
+                    Message::Info("Storing event types", 3);
                     pajeWriter->setPcfParser(pcfParser);
-                    cout<<"------Generating header"<<endl;
+                    Message::Info("Generating header", 3);
                     pajeWriter->generatePajeHeader();
-                    cout<<"------Define and create Paje containers"<<endl;
+                    Message::Info("Define and create Paje containers", 3);
                     pajeWriter->defineAndCreatePajeContainers();
-                    cout<<"------Define and create Paje event types"<<endl;
+                    Message::Info("Define and create Paje event types", 3);
                     pajeWriter->definePajeEvents();
-                    cout<<"---Done"<<endl;
                     mode=Body;
-                    cout<<"---Parsing Body"<<endl;
+                    Message::Info("Parsing Body", 2);
                 }else{
                     string eventType=*tokensIterator;
                     tokensIterator++;

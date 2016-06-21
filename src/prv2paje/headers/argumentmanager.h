@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include "config.h"
+#include "message.h"
 
 using namespace std;
 

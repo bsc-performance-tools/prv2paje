@@ -20,28 +20,37 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
         int type = it.first;
         string typeString = to_string(type);
         string value = it.second;
-        if (pcfParser->getPcfEvents()->count(type)!=0){
-            if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
-                if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)){
+        if (pcfParser->getPcfEvents()->count(type)==0){
+            PcfEvents* unknownEvent=new PcfEvents(0,type);
+            unknownEvent->setEventType(Variable);
+            unknownEvent->setLabel(to_string(type));
+            pcfParser->getPcfEvents()->operator [](type)=unknownEvent;
+            Message::Warning("line " + to_string(lineNumber)+ ". Undefined event type. Type: "+to_string(type)+" Value: "+value+
+                            ". Unable to determine its semantic. Will be defined as a variable. We recommend to add this event type in the trace pcf file.");
+            string color= to_string((float) rand()/RAND_MAX)+string(" ")+
+                          to_string((float) rand()/RAND_MAX)+string(" ")+
+                          to_string((float) rand()/RAND_MAX);
+            poti_DefineVariableType(typeString.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, typeString.c_str(), color.c_str());
+        }
+        if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
+            if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)){
 
-                    poti_PopState (timestamp, container.c_str(), typeString.c_str());
-                }else{
-                    poti_PushState (timestamp, container.c_str(), typeString.c_str(), value.c_str());
-                }
-            }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==Variable){
-                try{
-                    long long valueLong=stoll(value.c_str());
-                    poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), valueLong);
-                }catch (const std::out_of_range& err) {
-                    cerr << "Line "<< lineNumber<<": error, out of range value; Type: "<<type<<" Value: "<<value<<endl;
-                    cerr << "Event will be thrown"<<endl;
-                }
+                poti_PopState (timestamp, container.c_str(), typeString.c_str());
+            }else{
+                poti_PushState (timestamp, container.c_str(), typeString.c_str(), value.c_str());
+            }
+        }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==Variable){
+            try{
+                long long valueLong=stoll(value.c_str());
+                poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), valueLong);
+            }catch (const std::out_of_range& err) {
+                Message::Warning("line "+ to_string(lineNumber)+". Value out of range value. Type: "+to_string(type)+" Value: "+value+". Event will be dropped...");
             }
         }
     }
 }
 
-void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long linenumber)
+void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber)
 {
     checkContainerChain(startTimestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
@@ -57,7 +66,7 @@ void prv2paje::PajeWriter::generatePajeHeader()
 {
     FILE *file = fopen(pajePath.c_str(), "w");
     if (!file){
-      cerr<<"Error, cannot generate "<<pajePath<<endl;
+      Message::Error("cannot generate file "+pajePath);
     }
     int err=poti_init(file);
     poti_header(0, 0);
@@ -106,12 +115,12 @@ void prv2paje::PajeWriter::definePajeEvents()
     }
     for (auto const &it : *(pcfParser->getPcfEvents())){
         string alias=to_string(it.first);
-        string name=it.second->getLabel();
+        string name="\""+it.second->getLabel()+"\"";
         if (it.second->getEventType()==State){
             poti_DefineStateType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str());
             for (auto const &it2 : *(it.second->getValues())){
                 string alias2=to_string(it2.first);
-                string name2=it2.second->getShortLabel();
+                string name2=it2.second->getLabel();
                 string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                               to_string((float) rand()/RAND_MAX)+string(" ")+
                               to_string((float) rand()/RAND_MAX);

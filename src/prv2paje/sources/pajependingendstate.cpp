@@ -1,4 +1,4 @@
-#include "../headers/pajependingendstate.h"
+#include "pajependingendstate.h"
 
 prv2paje::PajePendingEndState::PajePendingEndState()
 {

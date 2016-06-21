@@ -1,4 +1,4 @@
-#include "../headers/pajepending.h"
+#include "pajepending.h"
 
 prv2paje::PajePending::PajePending()
 {

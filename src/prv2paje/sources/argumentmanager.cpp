@@ -15,8 +15,8 @@ prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv)
 
 void prv2paje::ArgumentManager::usage()
 {
-    cerr<<"Usage:"<<endl;
-    cerr<<me.c_str()<<" [input-trace].prv [output-trace]"<<endl;
+    Message::Info("Usage");
+    Message::Info(string(me.c_str())+" [input-trace].prv [output-trace]");
 }
 
 string prv2paje::ArgumentManager::getPajePath() const

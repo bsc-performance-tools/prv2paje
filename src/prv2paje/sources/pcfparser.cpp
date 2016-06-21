@@ -125,23 +125,32 @@ void prv2paje::PcfParser::parse(){
                         break;
                         case Values:
                         {
-                            string label="";
-                            int i;
-                            for (i=2;i<tokens.size();i++){
-                                label+=tokens[i];
-                                label+=" ";
-                            }
-                            trim_right(label);
                             int value=atoi(tokens.operator [](0).c_str());
+                            int i;
                             if (value==PCF_EVENT_STATE_VALUE_END){
                                 for (i=0; i<eventBunch.size();i++){
                                    pcfEvents->at(eventBunch[i])->setEventType(State);
                                 }
                             }
-                            pcfValues->operator [](pcfValues->size()-1)->operator [](value)=new PcfValue(value,tokens[1]);
-                            if (label.compare("")!=0){
-                                pcfValues->operator [](pcfValues->size()-1)->operator [](value)->setLongLabel(label);
+                            string label;
+
+                            for (i=1;i<tokens.size();i++){
+                                label+=tokens[i];
+                                label+=" ";
                             }
+                            trim_right(label);
+                            vector<string> tokensTemp;
+                            split(tokensTemp, label, is_any_of("[]"));
+                            if(tokensTemp.size()==0){
+
+                            }else if (tokensTemp.size()==1){
+                                label=tokensTemp[0];
+                            }else if (tokensTemp.size()==2){
+                                label=tokensTemp[1];
+                            }else{
+                                label=tokensTemp[1];
+                            }
+                            pcfValues->operator [](pcfValues->size()-1)->operator [](value)=new PcfValue(value,label);
                         }
                         break;
                         case Options:
