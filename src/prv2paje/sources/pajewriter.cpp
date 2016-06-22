@@ -33,7 +33,7 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
             poti_DefineVariableType(typeString.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, typeString.c_str(), color.c_str());
         }
         if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
-            if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)){
+            if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)==0){
 
                 poti_PopState (timestamp, container.c_str(), typeString.c_str());
             }else{
