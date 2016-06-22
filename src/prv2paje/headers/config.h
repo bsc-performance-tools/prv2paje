@@ -11,7 +11,7 @@
 #define PCF_EXT                                     "pcf"
 #define ROW_EXT                                     "row"
 
-#define PAJE_EXT                                    "pj"
+#define PAJE_EXT                                    "paje"
 
 #define PCF_STATES                                  "STATES"
 #define PCF_STATES_COLOR                            "STATES_COLOR"

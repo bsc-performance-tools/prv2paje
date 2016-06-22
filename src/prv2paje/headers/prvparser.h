@@ -27,13 +27,13 @@ namespace prv2paje{
     class PrvParser
     {
     public:
-        PrvParser(ifstream* prvStream, PcfParser* pcfParser, PajeWriter* pajeWriter);
+        PrvParser(ifstream* prvStream, PcfParser* pcfParser, InterpreterComponent* interpreterComponent);
         ~PrvParser();
         void parse();
     private:
         enum Mode{Header, Body};
         ifstream* prvStream;
-        PajeWriter* pajeWriter;
+        InterpreterComponent* interpreterComponent;
         PcfParser* pcfParser;
         PrvMetaData* prvMetaData;
     };

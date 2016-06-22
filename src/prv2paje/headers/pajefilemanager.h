@@ -18,6 +18,7 @@ namespace prv2paje{
         bool getPajeValid() const;
 
         string getPajePath() const;
+        static string PajeNameFromPrv(string prvPath);
 
     private:
         bool pajeValid;

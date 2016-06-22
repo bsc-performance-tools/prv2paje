@@ -1,8 +1,8 @@
 #include "prvparser.h"
 
 
-prv2paje::PrvParser::PrvParser(ifstream *prvStream, prv2paje::PcfParser *pcfParser, prv2paje::PajeWriter *pajeWriter):
-    prvStream(prvStream), pcfParser(pcfParser), pajeWriter(pajeWriter), prvMetaData(new PrvMetaData())
+prv2paje::PrvParser::PrvParser(ifstream *prvStream, prv2paje::PcfParser *pcfParser, prv2paje::InterpreterComponent *interpreterComponent):
+    prvStream(prvStream), pcfParser(pcfParser), interpreterComponent(interpreterComponent), prvMetaData(new PrvMetaData())
 {
 
 }
@@ -87,15 +87,10 @@ void prv2paje::PrvParser::parse()
                     //saving metadata
                     Message::Info("Initializing writer", 2);
                     Message::Info("Storing metadata", 3);
-                    pajeWriter->setPrvMetaData(prvMetaData);
+                    interpreterComponent->setPrvMetaData(prvMetaData);
                     Message::Info("Storing event types", 3);
-                    pajeWriter->setPcfParser(pcfParser);
-                    Message::Info("Generating header", 3);
-                    pajeWriter->generatePajeHeader();
-                    Message::Info("Define and create Paje containers", 3);
-                    pajeWriter->defineAndCreatePajeContainers();
-                    Message::Info("Define and create Paje event types", 3);
-                    pajeWriter->definePajeEvents();
+                    interpreterComponent->setPcfParser(pcfParser);
+                    interpreterComponent->initialize();
                     mode=Body;
                     Message::Info("Parsing Body", 2);
                 }else{
@@ -138,7 +133,7 @@ void prv2paje::PrvParser::parse()
                             tokensIterator++;
                             events->operator [](id)=temp;
                         }
-                        pajeWriter->pushEvents(cpu, app, task, thread, timestamp, events, lineNumber);
+                        interpreterComponent->pushEvents(cpu, app, task, thread, timestamp, events, lineNumber);
                         delete events;
                     }else if (eventType.compare(PRV_BODY_STATE)==0){
                         string temp=*tokensIterator;
@@ -164,14 +159,11 @@ void prv2paje::PrvParser::parse()
                         temp=*tokensIterator;
                         tokensIterator++;
                         double endTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
-                        if (endTimestamp==1.000000000){
-                            Message::Info("Boogie");
-                        }
                         temp=*tokensIterator;
-                        pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
+                        interpreterComponent->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
                     }
                 }
             } 
-        }pajeWriter->finalize();
+        }interpreterComponent->finalize();
     }
 }

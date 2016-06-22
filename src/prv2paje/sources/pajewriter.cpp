@@ -174,14 +174,14 @@ void prv2paje::PajeWriter::finalize()
     poti_close();
 }
 
-prv2paje::PcfParser *prv2paje::PajeWriter::getPcfParser() const
+void prv2paje::PajeWriter::initialize()
 {
-    return pcfParser;
-}
-
-void prv2paje::PajeWriter::setPcfParser(PcfParser *value)
-{
-    pcfParser = value;
+    Message::Info("Generating header", 3);
+    generatePajeHeader();
+    Message::Info("Define and create Paje containers", 3);
+    defineAndCreatePajeContainers();
+    Message::Info("Define and create Paje event types", 3);
+    definePajeEvents();
 }
 
 void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int app, int task, int thread)
@@ -211,14 +211,3 @@ void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int 
     }
 }
 
-
-
-prv2paje::PrvMetaData *prv2paje::PajeWriter::getPrvMetaData() const
-{
-    return prvMetaData;
-}
-
-void prv2paje::PajeWriter::setPrvMetaData(PrvMetaData *value)
-{
-    prvMetaData = value;
-}

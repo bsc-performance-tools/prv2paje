@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
         argumentManager.usage();
         return RETURN_ERR_PCF;
     }
-    PajeFileManager pajeFileManager(argumentManager.getPajePath());
+    PajeFileManager pajeFileManager(argumentManager.getPajePath().compare("")?argumentManager.getPajePath():PajeFileManager::PajeNameFromPrv(argumentManager.getPrvPath()));
     if (!pajeFileManager.getPajeValid()){
         Message::Critical("Pajé trace file cannot be created");
         argumentManager.usage();

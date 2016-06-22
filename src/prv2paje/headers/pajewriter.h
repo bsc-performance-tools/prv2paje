@@ -14,34 +14,28 @@
 #include "pcfparser.h"
 #include "pajepending.h"
 #include "message.h"
+#include "interpretercomponent.h"
 
 using namespace std;
 
 namespace prv2paje{
 
-    class PajeWriter
+    class PajeWriter: public InterpreterComponent
     {
     public:
         PajeWriter(string pajePath);
         ~PajeWriter();
         void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events, long lineNumber);
         void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber);
-        void generatePajeHeader();
-        void defineAndCreatePajeContainers();
-        void definePajeEvents();
         void finalize();
-        PrvMetaData *getPrvMetaData() const;
-        void setPrvMetaData(PrvMetaData *value);
-
-        PcfParser *getPcfParser() const;
-        void setPcfParser(PcfParser *value);
+        void initialize();
 
     private:
         void checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
-
+        void generatePajeHeader();
+        void defineAndCreatePajeContainers();
+        void definePajeEvents();
         string pajePath;
-        PrvMetaData *prvMetaData;
-        PcfParser *pcfParser;
         PajePending pajePending;
         vector<map<int, map<int, map<int, bool > > > > containerChain;
     };

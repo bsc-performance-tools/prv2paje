@@ -29,3 +29,13 @@ string prv2paje::PajeFileManager::getPajePath() const
 {
     return pajePath;
 }
+
+string prv2paje::PajeFileManager::PajeNameFromPrv(string prvPath)
+{
+    string pajePath;
+    string prvExt=string(PRV_EXT);
+    pajePath=prvPath;
+    string ext=string(PAJE_EXT);
+    pajePath.replace(prvPath.size()-prvExt.size(), ext.size(), ext);
+    return pajePath;
+}
