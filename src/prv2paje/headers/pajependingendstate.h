@@ -13,7 +13,7 @@ namespace prv2paje{
     {
     public:
         PajePendingEndState();
-        PajePendingEndState(int long timestamp);
+        PajePendingEndState(double timestamp);
         string className();
     };
 

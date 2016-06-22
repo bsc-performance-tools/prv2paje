@@ -44,7 +44,7 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
                 long long valueLong=stoll(value.c_str());
                 poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), valueLong);
             }catch (const std::out_of_range& err) {
-                Message::Warning("line "+ to_string(lineNumber)+". Value out of range value. Type: "+to_string(type)+" Value: "+value+". Event will be dropped...");
+                Message::Warning("line "+ to_string(lineNumber)+". Value out of range. Type: "+to_string(type)+" Value: "+value+". Event will be dropped...");
             }
         }
     }
@@ -52,14 +52,18 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
 
 void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber)
 {
-    checkContainerChain(startTimestamp, cpu, app, task, thread);
-    string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
-    PajePendingEndState* pajePendingEndState=new PajePendingEndState(endTimestamp);
-    pajePendingEndState->setContainer(container);
-    pajePendingEndState->setType(PAJE_PRVSTATE_ALIAS);
-    pajePending.pushPendingEvents(startTimestamp);
-    poti_PushState (startTimestamp, container.c_str(), PAJE_PRVSTATE_ALIAS, value.c_str());
-    pajePending.addPajePendingEvent(pajePendingEndState);
+    if (startTimestamp>endTimestamp){
+        Message::Warning("line "+ to_string(lineNumber)+". State duration is negative. Start: "+to_string(startTimestamp)+" End: "+to_string(endTimestamp)+". Event will be dropped...");
+    }else{
+        checkContainerChain(startTimestamp, cpu, app, task, thread);
+        string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
+        PajePendingEndState* pajePendingEndState=new PajePendingEndState(endTimestamp);
+        pajePendingEndState->setContainer(container);
+        pajePendingEndState->setType(PAJE_PRVSTATE_ALIAS);
+        pajePending.pushPendingEvents(startTimestamp);
+        poti_PushState (startTimestamp, container.c_str(), PAJE_PRVSTATE_ALIAS, value.c_str());
+        pajePending.addPajePendingEvent(pajePendingEndState);
+    }
 }
 
 void prv2paje::PajeWriter::generatePajeHeader()

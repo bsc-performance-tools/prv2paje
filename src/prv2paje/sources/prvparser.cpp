@@ -16,6 +16,7 @@ void prv2paje::PrvParser::parse()
 {
     string line;
     long lineNumber=0;
+    double currentTimestamp=0;
     Mode mode=Header;
     if (prvStream){
         while(getline(*prvStream,line)){
@@ -123,6 +124,11 @@ void prv2paje::PrvParser::parse()
                         temp=*tokensIterator;
                         tokensIterator++;
                         double timestamp=stoll(temp)/prvMetaData->getTimeDivider();
+                        if (currentTimestamp>timestamp){
+                            Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(timestamp*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+                            return;
+                        }
+                        currentTimestamp=timestamp;
                         map<int, string>* events=new map<int, string>();
                         for (; tokensIterator!=tokens.end();){
                             temp=*tokensIterator;
@@ -150,9 +156,17 @@ void prv2paje::PrvParser::parse()
                         temp=*tokensIterator;
                         tokensIterator++;
                         double startTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
+                        if (currentTimestamp>startTimestamp){
+                            Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+                            return;
+                        }
+                        currentTimestamp=startTimestamp;
                         temp=*tokensIterator;
                         tokensIterator++;
                         double endTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
+                        if (endTimestamp==1.000000000){
+                            Message::Info("Boogie");
+                        }
                         temp=*tokensIterator;
                         pajeWriter->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
                     }

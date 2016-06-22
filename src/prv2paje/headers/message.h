@@ -4,8 +4,8 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "config.h"
 
-#define MESSAGE_INFO
 
 #ifdef MESSAGE_DEBUG
 #define MESSAGE_INFO

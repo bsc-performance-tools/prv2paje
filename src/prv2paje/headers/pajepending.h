@@ -7,6 +7,7 @@
 #include <poti.h>
 #include "pajependingevent.h"
 #include "pajependingendstate.h"
+#include "message.h"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ namespace prv2paje{
         void addPajePendingEvent(PajePendingEvent *pajePendingEvent);
         void pushPendingEvents(double timestamp);
     private:
+        static bool predicate(const PajePendingEvent* p1, const PajePendingEvent *p2);
         list<PajePendingEvent*> pajePendingEvents;
     };
 

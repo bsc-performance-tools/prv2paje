@@ -5,6 +5,8 @@
 #define __BUILD_VERSION__ "Unknown"
 #endif
 
+#define MESSAGE_INFO
+
 #define PRV_EXT                                     "prv"
 #define PCF_EXT                                     "pcf"
 #define ROW_EXT                                     "row"
@@ -105,8 +107,6 @@
 #define PAJE_TIME_DIVIDER_NANOSECONDS               1000000000.0
 #define PAJE_TIME_DIVIDER_MINUTES                   (1.0/60.0)
 #define PAJE_TIME_DIVIDER_HOURS                     (1.0/3600.0)
-
-
 
 #define RETURN_OK                                   0
 #define RETURN_ERR_PRV                              1

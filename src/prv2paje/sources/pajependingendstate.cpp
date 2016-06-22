@@ -5,7 +5,7 @@ prv2paje::PajePendingEndState::PajePendingEndState()
 
 }
 
-prv2paje::PajePendingEndState::PajePendingEndState(long timestamp):PajePendingEvent(timestamp)
+prv2paje::PajePendingEndState::PajePendingEndState(double timestamp):PajePendingEvent(timestamp)
 {
 
 }
