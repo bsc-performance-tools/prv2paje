@@ -28,6 +28,10 @@ namespace prv2paje{
 
         string getPajePath() const;
 
+        bool getBasic() const;
+
+        bool getOld() const;
+
     private:
         bool valid;
         bool basic;

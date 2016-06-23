@@ -40,6 +40,16 @@ string prv2paje::ArgumentManager::getPajePath() const
     return pajePath;
 }
 
+bool prv2paje::ArgumentManager::getOld() const
+{
+    return old;
+}
+
+bool prv2paje::ArgumentManager::getBasic() const
+{
+    return basic;
+}
+
 string prv2paje::ArgumentManager::getPrvPath() const
 {
     return prvPath;

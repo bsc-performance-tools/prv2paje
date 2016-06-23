@@ -24,6 +24,7 @@ namespace prv2paje{
     {
     public:
         PajeWriter(string pajePath);
+        PajeWriter(string pajePath, bool basicHeader, bool oldHeader);
         ~PajeWriter();
         void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events, long lineNumber);
         void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber);
@@ -35,6 +36,8 @@ namespace prv2paje{
         void generatePajeHeader();
         void defineAndCreatePajeContainers();
         void definePajeEvents();
+        bool basicHeader;
+        bool oldHeader;
         string pajePath;
         PajePending pajePending;
         vector<map<int, map<int, map<int, bool > > > > containerChain;

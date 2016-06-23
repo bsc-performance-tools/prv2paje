@@ -1,7 +1,12 @@
 #include "pajewriter.h"
 
 
-prv2paje::PajeWriter::PajeWriter(string pajePath):pajePath(pajePath)
+prv2paje::PajeWriter::PajeWriter(string pajePath):pajePath(pajePath), basicHeader(false), oldHeader(false)
+{
+
+}
+
+prv2paje::PajeWriter::PajeWriter(string pajePath, bool basicHeader, bool oldHeader):pajePath(pajePath), basicHeader(basicHeader), oldHeader(oldHeader)
 {
 
 }
@@ -72,8 +77,8 @@ void prv2paje::PajeWriter::generatePajeHeader()
     if (!file){
       Message::Error("cannot generate file "+pajePath);
     }
-    int err=poti_init(file);
-    poti_header(0, 0);
+    poti_init(file);
+    poti_header(basicHeader?1:0, oldHeader?1:0);
     //TODO manage old paje format, see https://github.com/schnorr/poti/tree/master/examples
 }
 

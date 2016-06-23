@@ -35,7 +35,7 @@ int main(int argc, char* argv[])
     Message::Info("Parsing configuration file",1);
     PcfParser *pcfParser = new PcfParser(paraverFileManager.getPcfStream());
     pcfParser->parse();
-    PajeWriter *pajeWriter = new PajeWriter(pajeFileManager.getPajePath());
+    PajeWriter *pajeWriter = new PajeWriter(pajeFileManager.getPajePath(), argumentManager.getBasic(), argumentManager.getOld());
     PrvParser *prvParser = new PrvParser(paraverFileManager.getPrvStream(),pcfParser, pajeWriter);
     Message::Info("Parsing paraver trace file and generating paje trace file",1);
     prvParser->parse();
