@@ -28,6 +28,8 @@ namespace prv2paje{
         ~PajeWriter();
         void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events, long lineNumber);
         void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber);
+        void pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2,
+                                double startTimestampSW, double startTimestampHW, double endTimestampSW, double endTimestampHW, long long value, long lineNumber);
         void finalize();
         void initialize();
 

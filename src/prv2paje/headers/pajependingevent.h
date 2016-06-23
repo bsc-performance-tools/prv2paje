@@ -2,6 +2,7 @@
 #define PAJEPENDINGEVENT_H
 
 #include <string>
+#include "config.h"
 
 using namespace std;
 

@@ -101,12 +101,66 @@ void prv2paje::PrvParser::parse()
                         //do nothing TODO, low priority...
                     //communications
                     }else if (eventType.compare(PRV_BODY_COMMUNICATION)==0){
-                        //TODO
+                        string temp=*tokensIterator;
+                        tokensIterator++;
+                        int cpu1=atoi(temp.c_str());
+                        if (cpu1==0){
+                            Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
+                            continue;
+                        }
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int app1=atoi(temp.c_str());
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int task1=atoi(temp.c_str());
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int thread1=atoi(temp.c_str());
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        double startTimestampSW=stoll(temp)/prvMetaData->getTimeDivider();
+                        if (currentTimestamp>startTimestampSW){
+                            Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+                            return;
+                        }
+                        currentTimestamp=startTimestamp;
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        double startTimestampHW=stoll(temp)/prvMetaData->getTimeDivider();
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int cpu2=atoi(temp.c_str());
+                        if (cpu2==0){
+                            continue;
+                        }
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int app2=atoi(temp.c_str());
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int task2=atoi(temp.c_str());
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        int thread2=atoi(temp.c_str());
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        double endTimestampHW=stoll(temp)/prvMetaData->getTimeDivider();
+                        temp=*tokensIterator;
+                        tokensIterator++;
+                        double endTimestampSW=stoll(temp)/prvMetaData->getTimeDivider();
+                        temp=*tokensIterator;
+                        long long value=stoll(temp);
+                        //Communication tag is not retrieved. Should we?
+                        interpreterComponent->pushCommunications(cpu1, app1, task1, thread1, cpu2, app2, task2, thread2, startTimestampSW, startTimestampHW, endTimestampSW, endTimestampHW, value, lineNumber);
                     //events
                     }else if (eventType.compare(PRV_BODY_EVENTS)==0){
                         string temp=*tokensIterator;
                         tokensIterator++;
                         int cpu=atoi(temp.c_str());
+                        if (cpu==0){
+                            continue;
+                        }
                         temp=*tokensIterator;
                         tokensIterator++;
                         int app=atoi(temp.c_str());
@@ -139,6 +193,9 @@ void prv2paje::PrvParser::parse()
                         string temp=*tokensIterator;
                         tokensIterator++;
                         int cpu=atoi(temp.c_str());
+                        if (cpu==0){
+                            continue;
+                        }
                         temp=*tokensIterator;
                         tokensIterator++;
                         int app=atoi(temp.c_str());

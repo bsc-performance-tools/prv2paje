@@ -7,6 +7,8 @@
 #include <poti.h>
 #include "pajependingevent.h"
 #include "pajependingendstate.h"
+#include "pajependingstartcommunication.h"
+#include "pajependingendcommunication.h"
 #include "message.h"
 
 using namespace std;
