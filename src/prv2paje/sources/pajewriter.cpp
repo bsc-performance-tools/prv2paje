@@ -71,10 +71,10 @@ void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, dou
     }
 }
 
-void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2, double startTimestampSW, double startTimestampHW, double endTimestampHW, double endTimestampSW, long long value, long lineNumber)
+void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2, double startTimestampSW, double startTimestampHW, double endTimestampSW, double endTimestampHW, string value, long lineNumber)
 {
-    if (startTimestampSW>endTimestampSW||startTimestampHW>endTimestampHW||startTimestampSW>startTimestampHW||endTimestampSW<endTimestampHW||startTimestampHW>endTimestampSW){
-        Message::Warning("line "+ to_string(lineNumber)+". Communication timestamps (Logical/Physical and/or Start/End) are incoherent. Event will be dropped...");
+    if (startTimestampHW>endTimestampHW){
+        Message::Debug("line "+ to_string(lineNumber)+". Communication timestamps (Logical/Physical and/or Start/End) are incoherent. Event will be dropped...");
     }else{
         checkContainerChain(startTimestampSW, cpu1, app1, task1, thread1);
         checkContainerChain(startTimestampSW, cpu2, app2, task2, thread2);
@@ -94,11 +94,11 @@ void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int
                 if (task1==task2){
                     typeHW=PAJE_PRVCOMMUNICATION_HW_TASK_ALIAS;
                     typeSW=PAJE_PRVCOMMUNICATION_SW_TASK_ALIAS;
-                    container = container + +string(".")+to_string(task1);
+                    container = container+string(".")+to_string(task1);
                     if (thread1==thread2){
                         typeHW=PAJE_PRVCOMMUNICATION_HW_THREAD_ALIAS;
                         typeSW=PAJE_PRVCOMMUNICATION_SW_THREAD_ALIAS;
-                        container = container + +string(".")+to_string(thread1);
+                        container = container+string(".")+to_string(thread1);
                     }
                 }
             }
@@ -121,11 +121,12 @@ void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int
         pajePendingStartCommunicationHW->setKey(PajePendingCommunication::GetNextKey());
         pajePendingEndCommunicationHW->setKey(pajePendingStartCommunicationHW->getKey());
         pajePendingEndCommunicationSW->setKey(PajePendingEndCommunication::GetNextKey());
-        pajePending.pushPendingEvents(startTimestampSW);
-        poti_StartLink(startTimestampSW, container.c_str(), typeSW.c_str(), startContainer.c_str(), value, pajePendingEndCommunicationSW->getKey());
+        pajePending.pushPendingEvents(startTimestampHW);
+        //TODO manage SW communications
+        //poti_StartLink(startTimestampSW, container.c_str(), typeSW.c_str(), startContainer.c_str(), value.c_str(), pajePendingEndCommunicationSW->getKey().c_str());
         pajePending.addPajePendingEvent(pajePendingStartCommunicationHW);
         pajePending.addPajePendingEvent(pajePendingEndCommunicationHW);
-        pajePending.addPajePendingEvent(pajePendingEndCommunicationSW);
+        //pajePending.addPajePendingEvent(pajePendingEndCommunicationSW);
     }
 }
 
@@ -249,6 +250,7 @@ void prv2paje::PajeWriter::finalize()
 
 void prv2paje::PajeWriter::initialize()
 {
+    PajePendingCommunication::InitializeId();
     Message::Info("Generating header", 3);
     generatePajeHeader();
     Message::Info("Define and create Paje containers", 3);

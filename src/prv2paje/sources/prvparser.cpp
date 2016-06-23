@@ -120,18 +120,19 @@ void prv2paje::PrvParser::parse()
                         temp=*tokensIterator;
                         tokensIterator++;
                         double startTimestampSW=stoll(temp)/prvMetaData->getTimeDivider();
-                        if (currentTimestamp>startTimestampSW){
-                            Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
-                            return;
-                        }
-                        currentTimestamp=startTimestamp;
+                        currentTimestamp=startTimestampSW;
                         temp=*tokensIterator;
                         tokensIterator++;
                         double startTimestampHW=stoll(temp)/prvMetaData->getTimeDivider();
+                        if (currentTimestamp>startTimestampHW){
+                            Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+                            return;
+                        }
                         temp=*tokensIterator;
                         tokensIterator++;
                         int cpu2=atoi(temp.c_str());
                         if (cpu2==0){
+                            Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
                             continue;
                         }
                         temp=*tokensIterator;
@@ -150,15 +151,15 @@ void prv2paje::PrvParser::parse()
                         tokensIterator++;
                         double endTimestampSW=stoll(temp)/prvMetaData->getTimeDivider();
                         temp=*tokensIterator;
-                        long long value=stoll(temp);
                         //Communication tag is not retrieved. Should we?
-                        interpreterComponent->pushCommunications(cpu1, app1, task1, thread1, cpu2, app2, task2, thread2, startTimestampSW, startTimestampHW, endTimestampSW, endTimestampHW, value, lineNumber);
+                        interpreterComponent->pushCommunications(cpu1, app1, task1, thread1, cpu2, app2, task2, thread2, startTimestampSW, startTimestampHW, endTimestampSW, endTimestampHW, temp, lineNumber);
                     //events
                     }else if (eventType.compare(PRV_BODY_EVENTS)==0){
                         string temp=*tokensIterator;
                         tokensIterator++;
                         int cpu=atoi(temp.c_str());
                         if (cpu==0){
+                            Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
                             continue;
                         }
                         temp=*tokensIterator;
@@ -194,6 +195,7 @@ void prv2paje::PrvParser::parse()
                         tokensIterator++;
                         int cpu=atoi(temp.c_str());
                         if (cpu==0){
+                            Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
                             continue;
                         }
                         temp=*tokensIterator;

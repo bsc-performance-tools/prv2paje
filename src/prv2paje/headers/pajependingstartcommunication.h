@@ -5,7 +5,7 @@
 
 namespace prv2paje{
 
-    class PajePendingStartCommunication : PajePendingCommunication
+    class PajePendingStartCommunication : public PajePendingCommunication
     {
     public:
         PajePendingStartCommunication();

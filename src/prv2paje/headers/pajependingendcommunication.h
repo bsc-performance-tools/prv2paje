@@ -5,11 +5,11 @@
 
 namespace prv2paje{
 
-    class PajePendingStartCommunication : PajePendingCommunication
+    class PajePendingEndCommunication : public PajePendingCommunication
     {
     public:
-        PajePendingStartCommunication();
-        PajePendingStartCommunication(double timestamp);
+        PajePendingEndCommunication();
+        PajePendingEndCommunication(double timestamp);
         string className();
     };
 

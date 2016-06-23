@@ -1,5 +1,7 @@
 #include "pajependingcommunication.h"
 
+int prv2paje::PajePendingCommunication::id;
+
 prv2paje::PajePendingCommunication::PajePendingCommunication()
 {
 
@@ -12,13 +14,13 @@ prv2paje::PajePendingCommunication::PajePendingCommunication(double timestamp):P
 
 void prv2paje::PajePendingCommunication::InitializeId()
 {
-    id=0;
+    prv2paje::PajePendingCommunication::id=0;
 }
 
 string prv2paje::PajePendingCommunication::GetNextKey()
 {
-    id++;
-    return string(PAJE_COMMUNICATION_KEY_PREFIX)+to_string(id);
+    prv2paje::PajePendingCommunication::id++;
+    return string(PAJE_COMMUNICATION_KEY_PREFIX)+to_string(prv2paje::PajePendingCommunication::id);
 }
 
 string prv2paje::PajePendingCommunication::getKey() const
@@ -41,12 +43,12 @@ void prv2paje::PajePendingCommunication::setSubContainer(const string &value)
     subContainer = value;
 }
 
-long long prv2paje::PajePendingCommunication::getValue() const
+string prv2paje::PajePendingCommunication::getValue() const
 {
     return value;
 }
 
-void prv2paje::PajePendingCommunication::setValue(long long value)
+void prv2paje::PajePendingCommunication::setValue(string val)
 {
-    value = value;
+    value = val;
 }

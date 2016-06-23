@@ -20,16 +20,18 @@ namespace prv2paje{
         void setKey(const string &value);
         string getSubContainer() const;
         void setSubContainer(const string &value);
-        long long getValue() const;
-        void setValue(long long value);
+        string getValue() const;
+        void setValue(string value);
+        static int id;
 
     private:
-        static int id;
         string key;
         string subContainer;
-        long long value;
+        string value;
     };
 
 }
+
+
 
 #endif // PAJEPENDINGCOMMUNICATION_H

@@ -23,11 +23,11 @@ void prv2paje::PajePending::pushPendingEvents(double timestamp)
         }
         else if ((*it)->className().compare("PajePendingEndCommunication")==0){
             PajePendingEndCommunication* cast = dynamic_cast<PajePendingEndCommunication*> (*it);
-            poti_EndLink(cast->getTimestamp(), cast->getContainer().c_str(), cast->getType().c_str(), cast->getSubContainer().c_str(), cast->getValue(), cast->getKey().c_str());
+            poti_EndLink(cast->getTimestamp(), cast->getContainer().c_str(), cast->getType().c_str(), cast->getSubContainer().c_str(), cast->getValue().c_str(), cast->getKey().c_str());
         }
         else if ((*it)->className().compare("PajePendingStartCommunication")==0){
             PajePendingStartCommunication* cast = dynamic_cast<PajePendingStartCommunication*> (*it);
-            poti_StartLink(cast->getTimestamp(), cast->getContainer().c_str(), cast->getType().c_str(), cast->getSubContainer().c_str(), cast->getValue(), cast->getKey().c_str());
+            poti_StartLink(cast->getTimestamp(), cast->getContainer().c_str(), cast->getType().c_str(), cast->getSubContainer().c_str(), cast->getValue().c_str(), cast->getKey().c_str());
         }
         toDelete.push_back(*it);
         it=pajePendingEvents.erase(it);
