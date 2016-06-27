@@ -44,11 +44,13 @@ IF("${isSystemDir}" STREQUAL "-1")
    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
-ExternalProject_Add(poti
-  DOWNLOAD_COMMAND ""
-  CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
-  SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/poti"
-)
+if(PRV2PAJE_OPT)
+  ExternalProject_Add(poti
+    DOWNLOAD_COMMAND ""
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}
+    SOURCE_DIR "${CMAKE_SOURCE_DIR}/external/poti"
+  )
+endif()
 
 ADD_SUBDIRECTORY(src)
 
