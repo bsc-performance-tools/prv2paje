@@ -63,6 +63,13 @@
 
 #define PAJE_COMMUNICATION_KEY_PREFIX               "key-"
 
+#define TIME_DIVIDER_SECONDS                        1.0
+#define TIME_DIVIDER_MILISECONDS                    1000.0
+#define TIME_DIVIDER_MICROSECONDS                   1000000.0
+#define TIME_DIVIDER_NANOSECONDS                    1000000000.0
+#define TIME_DIVIDER_MINUTES                        (1.0/60.0)
+#define TIME_DIVIDER_HOURS                          (1.0/3600.0)
+
 #define RETURN_OK                                   0
 #define RETURN_ERR_PRV                              1
 #define RETURN_ERR_PCF                              2
