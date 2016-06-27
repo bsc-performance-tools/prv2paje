@@ -16,7 +16,7 @@ void prvreader::PrvParser::parse()
 {
     string line;
     long lineNumber=0;
-    double *currentTimestamp;
+    double *currentTimestamp=new double;
     *currentTimestamp=0;
     Mode mode=Header;
     if (prvStream){
@@ -30,7 +30,7 @@ void prvreader::PrvParser::parse()
             if ((found!=std::string::npos)&&(found+1<line.length())){
                 found = line.find_first_of("a", found+1);
             }
-            if ((found!=std::string::npos)&&(line[found+1]=='t')&&(found+5<line.length())&&(line[found+5]==':')){
+            if ((found!=std::string::npos)&&(line[found+1]=='t')&&(found+5<line.length())&&(line[found+5]==PRV_HEADER_SEP_MAIN_CHAR)){
                 line[found+5]='*';
             }
             replace(line.begin(), line.end(), PRV_HEADER_QUOTE_IN_CHAR, GENERIC_SEP_CHAR);
@@ -38,11 +38,13 @@ void prvreader::PrvParser::parse()
             trim_all(line);
             if (!line.empty()){
                 escaped_list_separator<char> sep(GENERIC_ESCAPE_CHAR, PRV_HEADER_SEP_MAIN_CHAR, GENERIC_QUOTE_CHAR);
-                tokenizer<escaped_list_separator<char> > tokens(line, sep);
-                tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens.begin();
+                tokenizer<escaped_list_separator<char> > *tokens = new tokenizer<escaped_list_separator<char> >(line, sep);
+                tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
                 if (mode==Header){
-                    mode=Body;
                     Message::Info("Parsing Header", 2);
+                    parseHeader(tokens);
+                    mode=Body;
+                    Message::Info("Parsing Body", 2);
                 }else{
                     string eventType=*tokensIterator;
                     tokensIterator++;
@@ -51,22 +53,24 @@ void prvreader::PrvParser::parse()
                         //do nothing TODO, low priority...
                     //communications
                     }else if (eventType.compare(PRV_BODY_COMMUNICATION)==0){
-                        parseCommunications(tokensIterator, currentTimestamp, lineNumber);
+                        parseCommunications(tokens, currentTimestamp, lineNumber);
                     }else if (eventType.compare(PRV_BODY_EVENTS)==0){
-                        parseEvents(tokensIterator, tokens.end(), currentTimestamp, lineNumber);
+                        parseEvents(tokens, currentTimestamp, lineNumber);
                     }else if (eventType.compare(PRV_BODY_STATE)==0){
-                        parseState(tokensIterator, currentTimestamp, lineNumber);
+                        parseState(tokens, currentTimestamp, lineNumber);
                     }
                 }
+                delete tokens;
             } 
         }
         interpreterComponent->finalize();
+        delete currentTimestamp;
     }
 }
 
-void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> >::iterator tokensIterator)
+void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > *tokens)
 {
-    Message::Info("Parsing Header", 2);
+    tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     string temp=*tokensIterator;
     erase_all(temp, GENERIC_SEP);
     replace(temp.begin(), temp.end(), '*', ':');
@@ -118,8 +122,10 @@ void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> >:
     interpreterComponent->initialize();
 }
 
-void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, tokenizer<escaped_list_separator<char> >::iterator tokensEnd, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber)
 {
+    tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
+    tokensIterator++;
     string temp=*tokensIterator;
     tokensIterator++;
     int cpu=atoi(temp.c_str());
@@ -145,7 +151,7 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> >:
     }
     *currentTimestamp=timestamp;
     map<int, string>* events=new map<int, string>();
-    for (; tokensIterator!=tokensEnd;){
+    for (; tokensIterator!=tokens->end();){
         temp=*tokensIterator;
         tokensIterator++;
         int id=atoi(temp.c_str());
@@ -157,8 +163,10 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> >:
     delete events;
 }
 
-void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber)
 {
+    tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
+    tokensIterator++;
     string temp=*tokensIterator;
     tokensIterator++;
     int cpu=atoi(temp.c_str());
@@ -190,8 +198,10 @@ void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> >::
     interpreterComponent->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
 }
 
-void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber)
 {
+    tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
+    tokensIterator++;
     string temp=*tokensIterator;
     tokensIterator++;
     int cpu1=atoi(temp.c_str());
