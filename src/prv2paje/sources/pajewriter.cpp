@@ -16,8 +16,9 @@ prv2paje::PajeWriter::~PajeWriter()
 
 }
 
-void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string> *events, long lineNumber)
+void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, long t, map<int, string> *events, long lineNumber)
 {
+    double timestamp=(double)t/timeDivider;
     checkContainerChain(timestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
     pajePending.pushPendingEvents(timestamp);
@@ -55,8 +56,10 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, do
     }
 }
 
-void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber)
+void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, long t1, long t2, string value, long lineNumber)
 {
+    double startTimestamp=(double)t1/timeDivider;
+    double endTimestamp=(double)t2/timeDivider;
     if (startTimestamp>endTimestamp){
         Message::Warning("line "+ to_string(lineNumber)+". State duration is negative. Start: "+to_string(startTimestamp)+" End: "+to_string(endTimestamp)+". Event will be dropped...");
     }else{
@@ -71,8 +74,12 @@ void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, dou
     }
 }
 
-void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2, double startTimestampSW, double startTimestampHW, double endTimestampSW, double endTimestampHW, string value, long lineNumber)
+void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2, long t1, long t3, long t4, long t2, string value, long lineNumber)
 {
+    double startTimestampSW=(double)t1/timeDivider;
+    double endTimestampSW=(double)t2/timeDivider;
+    double startTimestampHW=(double)t3/timeDivider;
+    double endTimestampHW=(double)t4/timeDivider;
     if (startTimestampHW>endTimestampHW){
         Message::Debug("line "+ to_string(lineNumber)+". Communication timestamps (Logical/Physical and/or Start/End) are incoherent. Event will be dropped...");
     }else{
@@ -215,7 +222,7 @@ void prv2paje::PajeWriter::definePajeEvents()
 
 void prv2paje::PajeWriter::finalize()
 {
-    pajePending.pushPendingEvents(prvMetaData->getStandardDuration());
+    pajePending.pushPendingEvents((double)prvMetaData->getDuration()/timeDivider);
     int i=0;
     for (auto const cpu: containerChain){
         int cpu_index=i++ +1;
@@ -223,13 +230,13 @@ void prv2paje::PajeWriter::finalize()
             for (auto &task: app.second){
                 for (auto &thread: task.second){
                     string alias=to_string(cpu_index)+string(".")+to_string(app.first)+string(".")+to_string(task.first)+string(".")+to_string(thread.first);
-                    poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_THREAD, alias.c_str());
+                    poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_THREAD, alias.c_str());
                 }
                 string alias=to_string(cpu_index)+string(".")+to_string(app.first)+string(".")+to_string(task.first);
-                poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_TASK, alias.c_str());
+                poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_TASK, alias.c_str());
             }
             string alias=to_string(cpu_index)+string(".")+to_string(app.first);
-            poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_APP, alias.c_str());
+            poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_APP, alias.c_str());
         }
     }
     int it=0;
@@ -240,16 +247,17 @@ void prv2paje::PajeWriter::finalize()
             it++;
             string alias2(PAJE_CONTAINER_ALIAS_CPU_PREFIX);
             alias2+=to_string(it);
-            poti_DestroyContainer (prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
+            poti_DestroyContainer ((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
         }
-        poti_DestroyContainer (prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
+        poti_DestroyContainer ((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
     }
-    poti_DestroyContainer(prvMetaData->getStandardDuration(), PAJE_CONTAINER_DEF_ALIAS_ROOT, PAJE_CONTAINER_ALIAS_ROOT);
+    poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_ROOT, PAJE_CONTAINER_ALIAS_ROOT);
     poti_close();
 }
 
 void prv2paje::PajeWriter::initialize()
 {
+    setTimeDivider();
     PajePendingCommunication::InitializeId();
     Message::Info("Generating header", 3);
     generatePajeHeader();
@@ -257,6 +265,24 @@ void prv2paje::PajeWriter::initialize()
     defineAndCreatePajeContainers();
     Message::Info("Define and create Paje event types", 3);
     definePajeEvents();
+}
+
+double prv2paje::PajeWriter::getTimeDivider()
+{
+    return timeDivider;
+}
+
+void prv2paje::PajeWriter::setTimeDivider()
+{
+    if (prvMetaData->getTimeUnit().compare(PRV_TIME_UNIT_SECONDS)==0){
+        timeDivider=TIME_DIVIDER_SECONDS;
+    }else if (prvMetaData->getTimeUnit().compare(PRV_TIME_UNIT_MILISECONDS)==0){
+        timeDivider=TIME_DIVIDER_MILISECONDS;
+    }else if (prvMetaData->getTimeUnit().compare(PRV_TIME_UNIT_MICROSECONDS)==0){
+        timeDivider=TIME_DIVIDER_MICROSECONDS;
+    }else if (prvMetaData->getTimeUnit().compare(PRV_TIME_UNIT_NANOSECONDS)==0){
+        timeDivider=TIME_DIVIDER_NANOSECONDS;
+    }
 }
 
 void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int app, int task, int thread)

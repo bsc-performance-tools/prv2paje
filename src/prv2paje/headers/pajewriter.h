@@ -28,12 +28,14 @@ namespace prv2paje{
         PajeWriter(string pajePath);
         PajeWriter(string pajePath, bool basicHeader, bool oldHeader);
         ~PajeWriter();
-        void pushEvents(int cpu, int app, int task, int thread, double timestamp, map<int, string>* events, long lineNumber);
-        void pushState(int cpu, int app, int task, int thread, double startTimestamp, double endTimestamp, string value, long lineNumber);
+        void pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, string>* events, long lineNumber);
+        void pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, string value, long lineNumber);
         void pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2,
-                                double startTimestampSW, double startTimestampHW, double endTimestampSW, double endTimestampHW, string value, long lineNumber);
+                                long startTimestampSW, long startTimestampHW, long endTimestampSW, long endTimestampHW, string value, long lineNumber);
         void finalize();
         void initialize();
+        double getTimeDivider();
+        void setTimeDivider();
 
     private:
         void checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
@@ -42,6 +44,7 @@ namespace prv2paje{
         void definePajeEvents();
         bool basicHeader;
         bool oldHeader;
+        double timeDivider;
         string pajePath;
         PajePending pajePending;
         vector<map<int, map<int, map<int, bool > > > > containerChain;

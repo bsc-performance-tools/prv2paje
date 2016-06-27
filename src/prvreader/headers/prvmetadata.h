@@ -18,7 +18,6 @@ namespace prvreader{
         void setFile(const string &value);
 
         long getDuration() const;
-        double getStandardDuration() const;
         void setDuration(long value);
 
         string getTimeUnit() const;
@@ -36,14 +35,11 @@ namespace prvreader{
         vector<int> *getCpus() const;
         void setCpus(vector<int> *value);
 
-        double getTimeDivider() const;
-
     private:
         string comment;
         string file;
         long int duration;
         string timeUnit;
-        double timeDivider;
         int applications;
         int nodes;
         vector<int> *cpus;

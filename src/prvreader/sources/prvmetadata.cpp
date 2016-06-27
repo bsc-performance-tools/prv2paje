@@ -1,6 +1,6 @@
 #include "prvmetadata.h"
 
-prvreader::PrvMetaData::PrvMetaData():timeDivider(1.0)
+prvreader::PrvMetaData::PrvMetaData()
 {
 
 }
@@ -20,11 +20,6 @@ long prvreader::PrvMetaData::getDuration() const
     return duration;
 }
 
-double prvreader::PrvMetaData::getStandardDuration() const
-{
-    return double (duration)/timeDivider;
-}
-
 void prvreader::PrvMetaData::setDuration(long value)
 {
     duration = value;
@@ -38,15 +33,6 @@ string prvreader::PrvMetaData::getTimeUnit() const
 void prvreader::PrvMetaData::setTimeUnit(const string &value)
 {
     timeUnit = value;
-    if (timeUnit.compare(PRV_TIME_UNIT_SECONDS)==0){
-        timeDivider=TIME_DIVIDER_SECONDS;
-    }else if (timeUnit.compare(PRV_TIME_UNIT_MILISECONDS)==0){
-        timeDivider=TIME_DIVIDER_MILISECONDS;
-    }else if (timeUnit.compare(PRV_TIME_UNIT_MICROSECONDS)==0){
-        timeDivider=TIME_DIVIDER_MICROSECONDS;
-    }else if (timeUnit.compare(PRV_TIME_UNIT_NANOSECONDS)==0){
-        timeDivider=TIME_DIVIDER_NANOSECONDS;
-    }
 }
 
 int prvreader::PrvMetaData::getApplications() const
@@ -87,9 +73,4 @@ vector<int> *prvreader::PrvMetaData::getCpus() const
 void prvreader::PrvMetaData::setCpus(vector<int> *value)
 {
     cpus = value;
-}
-
-double prvreader::PrvMetaData::getTimeDivider() const
-{
-    return timeDivider;
 }

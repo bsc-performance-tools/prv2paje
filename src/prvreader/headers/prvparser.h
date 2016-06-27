@@ -32,9 +32,9 @@ namespace prvreader{
         void parse();
     private:
         void parseHeader(tokenizer<escaped_list_separator<char> > *tokens);
-        void parseEvents(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber);
-        void parseState(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber);
-        void parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber);
+        void parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber);
+        void parseState(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber);
+        void parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber);
         enum Mode{Header, Body};
         ifstream* prvStream;
         InterpreterComponent* interpreterComponent;

@@ -16,7 +16,7 @@ void prvreader::PrvParser::parse()
 {
     string line;
     long lineNumber=0;
-    double *currentTimestamp=new double;
+    long *currentTimestamp=new long;
     *currentTimestamp=0;
     Mode mode=Header;
     if (prvStream){
@@ -91,7 +91,6 @@ void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > 
         prvMetaData->setTimeUnit("");
     }
     Message::Info("Duration: " +to_string(prvMetaData->getDuration())+", Unit: "+prvMetaData->getTimeUnit(), 3);
-    Message::Info("Time Divider: " +to_string(prvMetaData->getTimeDivider()), 3);
     //nodes"<cpu>"
     temp=*tokensIterator;
     tokensIterator++;
@@ -122,7 +121,7 @@ void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > 
     interpreterComponent->initialize();
 }
 
-void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -144,9 +143,9 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > 
     int thread=atoi(temp.c_str());
     temp=*tokensIterator;
     tokensIterator++;
-    double timestamp=stoll(temp)/prvMetaData->getTimeDivider();
+    long timestamp=stol(temp);
     if (*currentTimestamp>timestamp){
-        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(timestamp*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(*currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(timestamp)+" Previous timestamp: "+to_string(*currentTimestamp)+". Leaving...");
         return;
     }
     *currentTimestamp=timestamp;
@@ -163,7 +162,7 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > 
     delete events;
 }
 
-void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -185,20 +184,20 @@ void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *
     int thread=atoi(temp.c_str());
     temp=*tokensIterator;
     tokensIterator++;
-    double startTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
+    long startTimestamp=stol(temp);
     if (*currentTimestamp>startTimestamp){
-        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(*currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp)+" Previous timestamp: "+to_string(*currentTimestamp)+". Leaving...");
         return;
     }
     *currentTimestamp=startTimestamp;
     temp=*tokensIterator;
     tokensIterator++;
-    double endTimestamp=stoll(temp)/prvMetaData->getTimeDivider();
+    long endTimestamp=stol(temp);
     temp=*tokensIterator;
     interpreterComponent->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
 }
 
-void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -220,13 +219,13 @@ void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<
     int thread1=atoi(temp.c_str());
     temp=*tokensIterator;
     tokensIterator++;
-    double startTimestampSW=stoll(temp)/prvMetaData->getTimeDivider();
+    long startTimestampSW=stol(temp);
     *currentTimestamp=startTimestampSW;
     temp=*tokensIterator;
     tokensIterator++;
-    double startTimestampHW=stoll(temp)/prvMetaData->getTimeDivider();
+    long startTimestampHW=stol(temp);
     if (*currentTimestamp>startTimestampHW){
-        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW*prvMetaData->getTimeDivider())+" Previous timestamp: "+to_string(*currentTimestamp*prvMetaData->getTimeDivider())+". Leaving...");
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW)+" Previous timestamp: "+to_string(*currentTimestamp)+". Leaving...");
         return;
     }
     temp=*tokensIterator;
@@ -247,10 +246,10 @@ void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<
     int thread2=atoi(temp.c_str());
     temp=*tokensIterator;
     tokensIterator++;
-    double endTimestampHW=stoll(temp)/prvMetaData->getTimeDivider();
+    long endTimestampHW=stol(temp);
     temp=*tokensIterator;
     tokensIterator++;
-    double endTimestampSW=stoll(temp)/prvMetaData->getTimeDivider();
+    long endTimestampSW=stol(temp);
     temp=*tokensIterator;
     //Communication tag is not retrieved. Should we?
     interpreterComponent->pushCommunications(cpu1, app1, task1, thread1, cpu2, app2, task2, thread2, startTimestampSW, startTimestampHW, endTimestampSW, endTimestampHW, temp, lineNumber);
