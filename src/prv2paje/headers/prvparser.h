@@ -31,6 +31,10 @@ namespace prv2paje{
         ~PrvParser();
         void parse();
     private:
+        void parseHeader(tokenizer<escaped_list_separator<char> >::iterator tokensIterator);
+        void parseEvents(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, tokenizer<escaped_list_separator<char> >::iterator tokensEnd, double * currentTimestamp, long lineNumber);
+        void parseState(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber);
+        void parseCommunications(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber);
         enum Mode{Header, Body};
         ifstream* prvStream;
         InterpreterComponent* interpreterComponent;
