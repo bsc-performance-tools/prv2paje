@@ -59,5 +59,6 @@ endif()
 ADD_SUBDIRECTORY(src)
 
 #export(PACKAGE ${PROJECT_NAME})
-
+file(GLOB SCRIPTS ${CMAKE_SOURCE_DIR}/scripts/*)
+install(PROGRAMS ${SCRIPTS} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin)
 add_custom_target(uninstall "${CMAKE_COMMAND}" -P "${CMAKE_MODULE_PATH}/uninstall.cmake")
