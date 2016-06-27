@@ -1,2 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-add_subdirectory(prv2paje)
+add_subdirectory(prvreader)
+if (PRV2PAJE_OPT)
+  add_subdirectory(prv2paje)
+endif()

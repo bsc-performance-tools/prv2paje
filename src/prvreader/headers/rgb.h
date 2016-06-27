@@ -9,7 +9,7 @@
 using namespace std;
 using namespace boost::algorithm;
 
-namespace prv2paje{
+namespace prvreader{
 
     class RGB
     {

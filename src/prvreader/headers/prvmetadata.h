@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 
-#include "config.h"
+#include "prvreader_config.h"
 
 using namespace std;
 
-namespace prv2paje{
+namespace prvreader{
 
     class PrvMetaData
     {

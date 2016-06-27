@@ -1,6 +1,6 @@
 #include "paraverfilemanager.h"
 
-prv2paje::ParaverFileManager::ParaverFileManager(string prvPath)
+prvreader::ParaverFileManager::ParaverFileManager(string prvPath)
 {
     prvValid=false;
     pcfValid=false;
@@ -41,7 +41,7 @@ prv2paje::ParaverFileManager::ParaverFileManager(string prvPath)
     }
 }
 
-prv2paje::ParaverFileManager::~ParaverFileManager()
+prvreader::ParaverFileManager::~ParaverFileManager()
 {
     if (prvValid){
         prvStream->close();
@@ -57,46 +57,46 @@ prv2paje::ParaverFileManager::~ParaverFileManager()
     delete rowStream;
 }
 
-string prv2paje::ParaverFileManager::getRowPath() const
+string prvreader::ParaverFileManager::getRowPath() const
 {
     return rowPath;
 }
 
-string prv2paje::ParaverFileManager::getPcfPath() const
+string prvreader::ParaverFileManager::getPcfPath() const
 {
     return pcfPath;
 }
 
-string prv2paje::ParaverFileManager::getPrvPath() const
+string prvreader::ParaverFileManager::getPrvPath() const
 {
     return prvPath;
 }
 
-ifstream* prv2paje::ParaverFileManager::getRowStream() const
+ifstream* prvreader::ParaverFileManager::getRowStream() const
 {
     return rowStream;
 }
 
-ifstream* prv2paje::ParaverFileManager::getPcfStream() const
+ifstream* prvreader::ParaverFileManager::getPcfStream() const
 {
     return pcfStream;
 }
-ifstream* prv2paje::ParaverFileManager::getPrvStream() const
+ifstream* prvreader::ParaverFileManager::getPrvStream() const
 {
     return prvStream;
 }
 
-bool prv2paje::ParaverFileManager::getRowValid() const
+bool prvreader::ParaverFileManager::getRowValid() const
 {
     return rowValid;
 }
 
-bool prv2paje::ParaverFileManager::getPcfValid() const
+bool prvreader::ParaverFileManager::getPcfValid() const
 {
     return pcfValid;
 }
 
-bool prv2paje::ParaverFileManager::getPrvValid() const
+bool prvreader::ParaverFileManager::getPrvValid() const
 {
     return prvValid;
 }

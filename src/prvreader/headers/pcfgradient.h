@@ -3,7 +3,7 @@
 
 #include "pcfstates.h"
 
-namespace prv2paje{
+namespace prvreader{
 
     class PcfGradient : public PcfStates
     {

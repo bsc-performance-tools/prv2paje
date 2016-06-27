@@ -9,14 +9,16 @@
 #include <map>
 #include <poti.h>
 
-#include "config.h"
-#include "prvmetadata.h"
-#include "pcfparser.h"
+#include "prv2paje_config.h"
+#include <prvreader_config.h>
+#include <prvmetadata.h>
+#include <pcfparser.h>
 #include "pajepending.h"
-#include "message.h"
-#include "interpretercomponent.h"
+#include <message.h>
+#include <interpretercomponent.h>
 
 using namespace std;
+using namespace prvreader;
 
 namespace prv2paje{
 

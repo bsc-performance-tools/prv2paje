@@ -4,7 +4,8 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "config.h"
+#include "prv2paje_config.h"
+#include <prvreader_config.h>
 
 using namespace std;
 

@@ -14,15 +14,15 @@
 
 #include <stdlib.h>
 
-#include "config.h"
+#include "prvreader_config.h"
 #include "pcfparser.h"
-#include "pajewriter.h"
+#include "interpretercomponent.h"
 #include "prvmetadata.h"
 
 using namespace std;
 using namespace boost;
 
-namespace prv2paje{
+namespace prvreader{
 
     class PrvParser
     {

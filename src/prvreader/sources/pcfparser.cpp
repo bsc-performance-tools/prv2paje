@@ -1,13 +1,13 @@
 #include "pcfparser.h"
 
 
-prv2paje::PcfParser::PcfParser(ifstream *pcfStream):
+prvreader::PcfParser::PcfParser(ifstream *pcfStream):
     pcfStream(pcfStream), pcfOptions(new map<string, PcfOptions*>()), pcfStates(new PcfStates()),
     pcfEvents(new map<int, PcfEvents*>()), pcfGradient(new PcfGradient()), pcfValues(new vector<map<int, PcfValue*>* >())
 {
 }
 
-prv2paje::PcfParser::~PcfParser()
+prvreader::PcfParser::~PcfParser()
 {
 
     for (auto it = pcfOptions->begin();it != pcfOptions->end(); it++) {
@@ -29,7 +29,7 @@ prv2paje::PcfParser::~PcfParser()
     delete pcfValues;
 }
 
-void prv2paje::PcfParser::parse(){
+void prvreader::PcfParser::parse(){
     string line;
     Mode mode=Unknown;
     string currentOption;
@@ -174,27 +174,27 @@ void prv2paje::PcfParser::parse(){
     }
 }
 
-vector<map<int, prv2paje::PcfValue *> *> * prv2paje::PcfParser::getPcfValues() const
+vector<map<int, prvreader::PcfValue *> *> * prvreader::PcfParser::getPcfValues() const
 {
     return pcfValues;
 }
 
-prv2paje::PcfGradient * prv2paje::PcfParser::getPcfGradient() const
+prvreader::PcfGradient * prvreader::PcfParser::getPcfGradient() const
 {
     return pcfGradient;
 }
 
-map<int, prv2paje::PcfEvents *> * prv2paje::PcfParser::getPcfEvents() const
+map<int, prvreader::PcfEvents *> * prvreader::PcfParser::getPcfEvents() const
 {
     return pcfEvents;
 }
 
-prv2paje::PcfStates * prv2paje::PcfParser::getPcfStates() const
+prvreader::PcfStates * prvreader::PcfParser::getPcfStates() const
 {
     return pcfStates;
 }
 
-map<string, prv2paje::PcfOptions *> * prv2paje::PcfParser::getPcfOptions() const
+map<string, prvreader::PcfOptions *> * prvreader::PcfParser::getPcfOptions() const
 {
     return pcfOptions;
 }

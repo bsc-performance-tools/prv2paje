@@ -9,9 +9,10 @@
 #include "pajependingendstate.h"
 #include "pajependingstartcommunication.h"
 #include "pajependingendcommunication.h"
-#include "message.h"
+#include <message.h>
 
 using namespace std;
+using namespace prvreader;
 
 namespace prv2paje{
 

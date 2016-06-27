@@ -1,18 +1,18 @@
 #include "prvparser.h"
 
 
-prv2paje::PrvParser::PrvParser(ifstream *prvStream, prv2paje::PcfParser *pcfParser, prv2paje::InterpreterComponent *interpreterComponent):
+prvreader::PrvParser::PrvParser(ifstream *prvStream, prvreader::PcfParser *pcfParser, prvreader::InterpreterComponent *interpreterComponent):
     prvStream(prvStream), pcfParser(pcfParser), interpreterComponent(interpreterComponent), prvMetaData(new PrvMetaData())
 {
 
 }
 
-prv2paje::PrvParser::~PrvParser()
+prvreader::PrvParser::~PrvParser()
 {
     delete prvMetaData;
 }
 
-void prv2paje::PrvParser::parse()
+void prvreader::PrvParser::parse()
 {
     string line;
     long lineNumber=0;
@@ -64,7 +64,7 @@ void prv2paje::PrvParser::parse()
     }
 }
 
-void prv2paje::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> >::iterator tokensIterator)
+void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> >::iterator tokensIterator)
 {
     Message::Info("Parsing Header", 2);
     string temp=*tokensIterator;
@@ -118,7 +118,7 @@ void prv2paje::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> >::
     interpreterComponent->initialize();
 }
 
-void prv2paje::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, tokenizer<escaped_list_separator<char> >::iterator tokensEnd, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, tokenizer<escaped_list_separator<char> >::iterator tokensEnd, double * currentTimestamp, long lineNumber)
 {
     string temp=*tokensIterator;
     tokensIterator++;
@@ -157,7 +157,7 @@ void prv2paje::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> >::
     delete events;
 }
 
-void prv2paje::PrvParser::parseState(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber)
 {
     string temp=*tokensIterator;
     tokensIterator++;
@@ -190,7 +190,7 @@ void prv2paje::PrvParser::parseState(tokenizer<escaped_list_separator<char> >::i
     interpreterComponent->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
 }
 
-void prv2paje::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber)
+void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> >::iterator tokensIterator, double * currentTimestamp, long lineNumber)
 {
     string temp=*tokensIterator;
     tokensIterator++;

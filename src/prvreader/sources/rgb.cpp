@@ -1,47 +1,47 @@
 #include "rgb.h"
 
-prv2paje::RGB::RGB():r(0), g(0), b(0)
+prvreader::RGB::RGB():r(0), g(0), b(0)
 {
 
 }
 
-int prv2paje::RGB::getR() const
+int prvreader::RGB::getR() const
 {
     return r;
 }
 
-void prv2paje::RGB::setR(int value)
+void prvreader::RGB::setR(int value)
 {
     if (value>=0&&value<=255){
         r = value;
     }
 }
 
-int prv2paje::RGB::getG() const
+int prvreader::RGB::getG() const
 {
     return g;
 }
 
-void prv2paje::RGB::setG(int value)
+void prvreader::RGB::setG(int value)
 {
     if (value>=0&&value<=255){
         g = value;
     }
 }
 
-int prv2paje::RGB::getB() const
+int prvreader::RGB::getB() const
 {
     return b;
 }
 
-void prv2paje::RGB::setB(int value)
+void prvreader::RGB::setB(int value)
 {
     if (value>=0&&value<=255){
         b = value;
     }
 }
 
-prv2paje::RGB::RGB(int r, int g, int b)
+prvreader::RGB::RGB(int r, int g, int b)
 {
     this->r=0;
     this->g=0;
@@ -49,14 +49,14 @@ prv2paje::RGB::RGB(int r, int g, int b)
     setRGB(r, g, b);
 }
 
-void prv2paje::RGB::setRGB(int r, int g, int b)
+void prvreader::RGB::setRGB(int r, int g, int b)
 {
     setR(r);
     setG(g);
     setB(b);
 }
 
-void prv2paje::RGB::setRGBFromPcf(string value)
+void prvreader::RGB::setRGBFromPcf(string value)
 {
     this->r=0;
     this->g=0;

@@ -4,11 +4,11 @@
 #include <fstream>
 #include <iostream>
 #include <string>
-#include "config.h"
+#include "prvreader_config.h"
 
 using namespace std;
 
-namespace prv2paje
+namespace prvreader
 {
 
     class ParaverFileManager

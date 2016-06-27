@@ -27,11 +27,12 @@
 *.out
 *.app
 
-#Cmake
-
+# Cmake
 build/*
 
 #QT
-
 *.user
 *.autosave
+
+# Vim
+*.swp

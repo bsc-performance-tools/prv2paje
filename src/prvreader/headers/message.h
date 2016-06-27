@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-#include "config.h"
+#include "prvreader_config.h"
 
 
 #ifdef MESSAGE_DEBUG
@@ -25,7 +25,7 @@
 
 using namespace std;
 
-namespace prv2paje{
+namespace prvreader{
 
     class Message
     {

@@ -7,17 +7,15 @@
 
 #include <fstream>
 #include <map>
-#include <poti.h>
 
-#include "config.h"
+#include "prvreader_config.h"
 #include "prvmetadata.h"
 #include "pcfparser.h"
-#include "pajepending.h"
 #include "message.h"
 
 using namespace std;
 
-namespace prv2paje{
+namespace prvreader{
 
     class InterpreterComponent
     {

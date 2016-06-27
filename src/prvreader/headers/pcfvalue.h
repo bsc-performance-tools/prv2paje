@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace prv2paje{
+namespace prvreader{
 
     class PcfValue
     {

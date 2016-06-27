@@ -1,28 +1,28 @@
 #include "message.h"
 
 
-void prv2paje::Message::Critical(string message)
+void prvreader::Message::Critical(string message)
 {
 #ifdef MESSAGE_CRITICAL
     cerr<<"!!!Critical!!!: "<<message<<endl;
 #endif
 }
 
-void prv2paje::Message::Debug(string message)
+void prvreader::Message::Debug(string message)
 {
 #ifdef MESSAGE_DEBUG
     cerr<<"Debug: "<<message<<endl;
 #endif
 }
 
-void prv2paje::Message::Error(string message)
+void prvreader::Message::Error(string message)
 {
 #ifdef MESSAGE_ERROR
     cerr<<"!!Error!!: "<<message<<endl;
 #endif
 }
 
-void prv2paje::Message::Info(string message, int level)
+void prvreader::Message::Info(string message, int level)
 {
 #ifdef MESSAGE_INFO
     for (int i=0; i<level; i++){
@@ -35,7 +35,7 @@ void prv2paje::Message::Info(string message, int level)
 #endif
 }
 
-void prv2paje::Message::Warning(string message)
+void prvreader::Message::Warning(string message)
 {
 #ifdef MESSAGE_WARNING
     cerr<<"!Warning!: "<<message<<endl;

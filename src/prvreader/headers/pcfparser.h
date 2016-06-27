@@ -12,7 +12,7 @@
 
 #include <stdlib.h>
 
-#include "config.h"
+#include "prvreader_config.h"
 #include "pcfoptions.h"
 #include "pcfstates.h"
 #include "pcfevents.h"
@@ -22,7 +22,7 @@
 using namespace std;
 using namespace boost::algorithm;
 
-namespace prv2paje{
+namespace prvreader{
 
     class PcfParser
     {

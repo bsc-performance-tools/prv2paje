@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace prv2paje{
+namespace prvreader{
 
     enum PcfEventType{Event, State, Variable, Communication, Undefined};
 
