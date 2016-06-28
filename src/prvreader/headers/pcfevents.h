@@ -7,9 +7,13 @@
 
 using namespace std;
 
-namespace prvreader{
+namespace pcfeventtype{
 
-    enum PcfEventType{Event, State, Variable, Communication, Undefined};
+enum PcfEventType{Event, State, Variable, Communication, Undefined};
+
+}
+
+namespace prvreader{
 
     class PcfEvents
     {
@@ -25,8 +29,8 @@ namespace prvreader{
         string getLabel() const;
         void setLabel(const string &value);
 
-        PcfEventType getEventType() const;
-        void setEventType(const PcfEventType &value);
+        pcfeventtype::PcfEventType getEventType() const;
+        void setEventType(const pcfeventtype::PcfEventType &value);
 
         map<int, PcfValue*> *getValues() const;
         void setValues(map<int, PcfValue*> *value);
@@ -35,7 +39,7 @@ namespace prvreader{
         int gradient;
         int type;
         string label;
-        PcfEventType eventType;
+        pcfeventtype::PcfEventType eventType;
         map<int, PcfValue*>* values;
     };
 

@@ -16,28 +16,36 @@
 #include "pajepending.h"
 #include <message.h>
 #include <interpretercomponent.h>
+#include <prvparser.h>
 
 using namespace std;
 using namespace prvreader;
 
 namespace prv2paje{
 
-    class PajeWriter: public InterpreterComponent
+    class PajeWriter
     {
     public:
-        PajeWriter(string pajePath);
-        PajeWriter(string pajePath, bool basicHeader, bool oldHeader);
+        PajeWriter(PrvParser* prvParser, string pajePath);
+        PajeWriter(PrvParser* prvParser, string pajePath, bool basicHeader, bool oldHeader);
         ~PajeWriter();
-        void pushEvents(int cpu, int app, int task, int thread, long timestamp, map<int, string>* events, long lineNumber);
-        void pushState(int cpu, int app, int task, int thread, long startTimestamp, long endTimestamp, string value, long lineNumber);
-        void pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2,
-                                long startTimestampSW, long startTimestampHW, long endTimestampSW, long endTimestampHW, string value, long lineNumber);
-        void finalize();
-        void initialize();
+        void push(PrvEvents*);
+        void push(PrvState*);
+        void push(PrvCommunications*);
         double getTimeDivider();
         void setTimeDivider();
+        void generate();
+
+        PrvParser *getPrvParser() const;
+
+        PrvMetaData *getPrvMetaData() const;
+
+        PcfParser *getPcfParser() const;
+
 
     private:
+        void finalize();
+        void initialize();
         void checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
         void generatePajeHeader();
         void defineAndCreatePajeContainers();
@@ -48,6 +56,9 @@ namespace prv2paje{
         string pajePath;
         PajePending pajePending;
         vector<map<int, map<int, map<int, bool > > > > containerChain;
+        PrvParser *prvParser;
+        PrvMetaData *prvMetaData;
+        PcfParser *pcfParser;
     };
 
 }

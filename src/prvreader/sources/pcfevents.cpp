@@ -41,12 +41,12 @@ void prvreader::PcfEvents::setLabel(const string &value)
     label = value;
 }
 
-prvreader::PcfEventType prvreader::PcfEvents::getEventType() const
+pcfeventtype::PcfEventType prvreader::PcfEvents::getEventType() const
 {
     return eventType;
 }
 
-void prvreader::PcfEvents::setEventType(const PcfEventType &value)
+void prvreader::PcfEvents::setEventType(const pcfeventtype::PcfEventType &value)
 {
     eventType = value;
 }

@@ -1,14 +1,16 @@
 #include "pajewriter.h"
 
 
-prv2paje::PajeWriter::PajeWriter(string pajePath):pajePath(pajePath), basicHeader(false), oldHeader(false)
+prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath):pajePath(pajePath), basicHeader(false), oldHeader(false), prvParser(prvParser)
 {
-
+    pcfParser=prvParser->getPcfParser();
+    prvMetaData=prvParser->getPrvMetaData();
 }
 
-prv2paje::PajeWriter::PajeWriter(string pajePath, bool basicHeader, bool oldHeader):pajePath(pajePath), basicHeader(basicHeader), oldHeader(oldHeader)
+prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath, bool basicHeader, bool oldHeader):pajePath(pajePath), basicHeader(basicHeader), oldHeader(oldHeader), prvParser(prvParser)
 {
-
+    pcfParser=prvParser->getPcfParser();
+    prvMetaData=prvParser->getPrvMetaData();
 }
 
 prv2paje::PajeWriter::~PajeWriter()
@@ -16,19 +18,24 @@ prv2paje::PajeWriter::~PajeWriter()
 
 }
 
-void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, long t, map<int, string> *events, long lineNumber)
+void prv2paje::PajeWriter::push(PrvEvents *prvEvent)
 {
-    double timestamp=(double)t/timeDivider;
+    double timestamp=(double)prvEvent->getTimestamp()/timeDivider;
+    int cpu=prvEvent->getCpu();
+    int app=prvEvent->getApp();
+    int task=prvEvent->getTask();
+    int thread=prvEvent->getThread();
+    long lineNumber=prvEvent->getLineNumber();
     checkContainerChain(timestamp, cpu, app, task, thread);
     string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
     pajePending.pushPendingEvents(timestamp);
-    for (auto &it: *events){
+    for (auto &it: *(prvEvent->getEvents())){
         int type = it.first;
         string typeString = to_string(type);
         string value = it.second;
         if (pcfParser->getPcfEvents()->count(type)==0){
             PcfEvents* unknownEvent=new PcfEvents(0,type);
-            unknownEvent->setEventType(Variable);
+            unknownEvent->setEventType(pcfeventtype::Variable);
             unknownEvent->setLabel(to_string(type));
             pcfParser->getPcfEvents()->operator [](type)=unknownEvent;
             Message::Warning("line " + to_string(lineNumber)+ ". Undefined event type. Type: "+to_string(type)+" Value: "+value+
@@ -38,14 +45,14 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, lo
                           to_string((float) rand()/RAND_MAX);
             poti_DefineVariableType(typeString.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, typeString.c_str(), color.c_str());
         }
-        if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==State){
+        if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==pcfeventtype::State){
             if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)==0){
 
                 poti_PopState (timestamp, container.c_str(), typeString.c_str());
             }else{
                 poti_PushState (timestamp, container.c_str(), typeString.c_str(), value.c_str());
             }
-        }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==Variable){
+        }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==pcfeventtype::Variable){
             try{
                 long long valueLong=stoll(value.c_str());
                 poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), valueLong);
@@ -56,10 +63,16 @@ void prv2paje::PajeWriter::pushEvents(int cpu, int app, int task, int thread, lo
     }
 }
 
-void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, long t1, long t2, string value, long lineNumber)
+void prv2paje::PajeWriter::push(PrvState *prvEvent)
 {
-    double startTimestamp=(double)t1/timeDivider;
-    double endTimestamp=(double)t2/timeDivider;
+    double startTimestamp=(double)prvEvent->getTimestamp()/timeDivider;
+    double endTimestamp=(double)prvEvent->getEndTimestamp()/timeDivider;
+    int cpu=prvEvent->getCpu();
+    int app=prvEvent->getApp();
+    int task=prvEvent->getTask();
+    int thread=prvEvent->getThread();
+    long lineNumber=prvEvent->getLineNumber();
+    string value=prvEvent->getValue();
     if (startTimestamp>endTimestamp){
         Message::Warning("line "+ to_string(lineNumber)+". State duration is negative. Start: "+to_string(startTimestamp)+" End: "+to_string(endTimestamp)+". Event will be dropped...");
     }else{
@@ -74,12 +87,22 @@ void prv2paje::PajeWriter::pushState(int cpu, int app, int task, int thread, lon
     }
 }
 
-void prv2paje::PajeWriter::pushCommunications(int cpu1, int app1, int task1, int thread1, int cpu2, int app2, int task2, int thread2, long t1, long t3, long t4, long t2, string value, long lineNumber)
+void prv2paje::PajeWriter::push(PrvCommunications *prvEvent)
 {
-    double startTimestampSW=(double)t1/timeDivider;
-    double endTimestampSW=(double)t2/timeDivider;
-    double startTimestampHW=(double)t3/timeDivider;
-    double endTimestampHW=(double)t4/timeDivider;
+    int cpu1=prvEvent->getCpu();
+    int app1=prvEvent->getApp();
+    int task1=prvEvent->getTask();
+    int thread1=prvEvent->getThread();
+    int cpu2=prvEvent->getCpu2();
+    int app2=prvEvent->getApp2();
+    int task2=prvEvent->getTask2();
+    int thread2=prvEvent->getThread2();
+    long lineNumber=prvEvent->getLineNumber();
+    double startTimestampSW=(double)prvEvent->getTimestamp()/timeDivider;
+    double endTimestampSW=(double)prvEvent->getTimestampEnd()/timeDivider;
+    double startTimestampHW=(double)prvEvent->getTimestampHW()/timeDivider;
+    double endTimestampHW=(double)prvEvent->getTimestampHWEnd()/timeDivider;
+    string value=prvEvent->getValue();
     if (startTimestampHW>endTimestampHW){
         Message::Debug("line "+ to_string(lineNumber)+". Communication timestamps (Logical/Physical and/or Start/End) are incoherent. Event will be dropped...");
     }else{
@@ -201,7 +224,7 @@ void prv2paje::PajeWriter::definePajeEvents()
     for (auto const &it : *(pcfParser->getPcfEvents())){
         string alias=to_string(it.first);
         string name=it.second->getLabel();
-        if (it.second->getEventType()==State){
+        if (it.second->getEventType()==pcfeventtype::State){
             poti_DefineStateType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str());
             for (auto const &it2 : *(it.second->getValues())){
                 string alias2=to_string(it2.first);
@@ -211,13 +234,28 @@ void prv2paje::PajeWriter::definePajeEvents()
                               to_string((float) rand()/RAND_MAX);
                 poti_DefineEntityValue(alias2.c_str(), alias.c_str(), name2.c_str(), color.c_str());
             }
-        }else if (it.second->getEventType()==Variable){
+        }else if (it.second->getEventType()==pcfeventtype::Variable){
             string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX)+string(" ")+
                           to_string((float) rand()/RAND_MAX);
             poti_DefineVariableType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str(), color.c_str());
         }
     }
+}
+
+PcfParser *prv2paje::PajeWriter::getPcfParser() const
+{
+    return pcfParser;
+}
+
+PrvMetaData *prv2paje::PajeWriter::getPrvMetaData() const
+{
+    return prvMetaData;
+}
+
+PrvParser *prv2paje::PajeWriter::getPrvParser() const
+{
+    return prvParser;
 }
 
 void prv2paje::PajeWriter::finalize()
@@ -283,6 +321,37 @@ void prv2paje::PajeWriter::setTimeDivider()
     }else if (prvMetaData->getTimeUnit().compare(PRV_TIME_UNIT_NANOSECONDS)==0){
         timeDivider=TIME_DIVIDER_NANOSECONDS;
     }
+}
+
+void prv2paje::PajeWriter::generate()
+{
+    prveventtype::PrvEventType type=prveventtype::Header;
+    do{
+        PrvEvent *prvEvent=prvParser->parseLine();
+        type=prvEvent->getType();
+        if (type==prveventtype::Events){
+            PrvEvents* cast=dynamic_cast<PrvEvents*> (prvEvent);
+            push(cast);
+        }
+        else if (type==prveventtype::State){
+            PrvState* cast=dynamic_cast<PrvState*> (prvEvent);
+            push(cast);
+        }
+        else if (type==prveventtype::Communications){
+            PrvCommunications* cast=dynamic_cast<PrvCommunications*> (prvEvent);
+            push(cast);
+        }
+        else if (type==prveventtype::End){
+            if (prvEvent->getLineNumber()>1){
+                finalize();
+            }
+        }
+        else if (type==prveventtype::Header){
+            initialize();
+        }
+        delete prvEvent;
+    }
+    while(type!=prveventtype::End);
 }
 
 void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int app, int task, int thread)

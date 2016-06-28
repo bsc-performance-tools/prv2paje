@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 find_package(PkgConfig REQUIRED)
 
-project(prv2framesoc)
+project(prv2framesoc CXX)
 
 file(GLOB_RECURSE SRC_FILES ${CMAKE_HOME_DIRECTORY}/src/prv2framesoc/*.cpp)
 set(HEADER_DIR ${CMAKE_HOME_DIRECTORY}/src/prv2framesoc/headers)

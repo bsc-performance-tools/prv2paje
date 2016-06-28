@@ -18,6 +18,14 @@
 #include "pcfparser.h"
 #include "interpretercomponent.h"
 #include "prvmetadata.h"
+#include "prvevent.h"
+#include "prvevents.h"
+#include "prvstate.h"
+#include "prvcommunications.h"
+#include "prvother.h"
+
+
+
 
 using namespace std;
 using namespace boost;
@@ -27,19 +35,25 @@ namespace prvreader{
     class PrvParser
     {
     public:
-        PrvParser(ifstream* prvStream, PcfParser* pcfParser, InterpreterComponent* interpreterComponent);
+        PrvParser(ifstream* prvStream, PcfParser* pcfParser);
         ~PrvParser();
-        void parse();
+        PrvEvent* parseLine();
+        PrvMetaData *getPrvMetaData() const;
+        PcfParser *getPcfParser() const;
+
     private:
-        void parseHeader(tokenizer<escaped_list_separator<char> > *tokens);
-        void parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber);
-        void parseState(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber);
-        void parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber);
+        PrvEvent* parseHeader(tokenizer<escaped_list_separator<char> > *tokens);
+        PrvEvent* parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber);
+        PrvEvent* parseState(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber);
+        PrvEvent* parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber);
         enum Mode{Header, Body};
         ifstream* prvStream;
         InterpreterComponent* interpreterComponent;
         PcfParser* pcfParser;
         PrvMetaData* prvMetaData;
+        Mode mode;
+        long lineNumber;
+        long currentTimestamp;
     };
 
 }

@@ -31,14 +31,13 @@ int main(int argc, char* argv[])
         argumentManager.usage();
         return RETURN_ERR_PAJE;
     }
-
     Message::Info("Parsing configuration file",1);
     PcfParser *pcfParser = new PcfParser(paraverFileManager.getPcfStream());
     pcfParser->parse();
-    PajeWriter *pajeWriter = new PajeWriter(pajeFileManager.getPajePath(), argumentManager.getBasic(), argumentManager.getOld());
-    PrvParser *prvParser = new PrvParser(paraverFileManager.getPrvStream(),pcfParser, pajeWriter);
+    PrvParser *prvParser = new PrvParser(paraverFileManager.getPrvStream(), pcfParser);
     Message::Info("Parsing paraver trace file and generating paje trace file",1);
-    prvParser->parse();
+    PajeWriter *pajeWriter = new PajeWriter(prvParser, pajeFileManager.getPajePath(), argumentManager.getBasic(), argumentManager.getOld());
+    pajeWriter->generate();
     delete pajeWriter;
     delete prvParser;
     delete pcfParser;

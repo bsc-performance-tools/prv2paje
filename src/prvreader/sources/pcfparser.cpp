@@ -60,7 +60,7 @@ void prvreader::PcfParser::parse(){
                         pcfValues->push_back(new map<int, PcfValue*>());
                         int i;
                         for (i=0; i<eventBunch.size();i++){
-                           pcfEvents->at(eventBunch[i])->setEventType(Event);
+                           pcfEvents->at(eventBunch[i])->setEventType(pcfeventtype::Event);
                            pcfEvents->at(eventBunch[i])->setValues(pcfValues->at(pcfValues->size()-1));
                         }
                     }else{
@@ -119,7 +119,7 @@ void prvreader::PcfParser::parse(){
                             trim_right(label);
                             int type=atoi(tokens.operator [](1).c_str());
                             pcfEvents->operator [](type)=new PcfEvents(atoi(tokens.operator [](0).c_str()), type, label);
-                            pcfEvents->operator [](type)->setEventType(Variable);
+                            pcfEvents->operator [](type)->setEventType(pcfeventtype::Variable);
                             eventBunch.push_back(type);
                         }
                         break;
@@ -129,7 +129,7 @@ void prvreader::PcfParser::parse(){
                             int i;
                             if (value==PCF_EVENT_STATE_VALUE_END){
                                 for (i=0; i<eventBunch.size();i++){
-                                   pcfEvents->at(eventBunch[i])->setEventType(State);
+                                   pcfEvents->at(eventBunch[i])->setEventType(pcfeventtype::State);
                                 }
                             }
                             string label;

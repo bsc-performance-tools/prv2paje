@@ -1,8 +1,8 @@
 #include "prvparser.h"
 
 
-prvreader::PrvParser::PrvParser(ifstream *prvStream, prvreader::PcfParser *pcfParser, prvreader::InterpreterComponent *interpreterComponent):
-    prvStream(prvStream), pcfParser(pcfParser), interpreterComponent(interpreterComponent), prvMetaData(new PrvMetaData())
+prvreader::PrvParser::PrvParser(ifstream *prvStream, prvreader::PcfParser *pcfParser):
+    prvStream(prvStream), pcfParser(pcfParser), prvMetaData(new PrvMetaData()), mode(Header), lineNumber(0), currentTimestamp(0)
 {
 
 }
@@ -12,15 +12,12 @@ prvreader::PrvParser::~PrvParser()
     delete prvMetaData;
 }
 
-void prvreader::PrvParser::parse()
+prvreader::PrvEvent* prvreader::PrvParser::parseLine()
 {
     string line;
-    long lineNumber=0;
-    long *currentTimestamp=new long;
-    *currentTimestamp=0;
-    Mode mode=Header;
+    PrvEvent* prvEvent;
     if (prvStream){
-        while(getline(*prvStream,line)){
+        if(getline(*prvStream,line)){
             lineNumber++;
             if (lineNumber%100000==0){
                 Message::Debug(to_string(lineNumber)+ " lines processed");
@@ -41,34 +38,34 @@ void prvreader::PrvParser::parse()
                 tokenizer<escaped_list_separator<char> > *tokens = new tokenizer<escaped_list_separator<char> >(line, sep);
                 tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
                 if (mode==Header){
-                    Message::Info("Parsing Header", 2);
-                    parseHeader(tokens);
+                    prvEvent=parseHeader(tokens);
                     mode=Body;
-                    Message::Info("Parsing Body", 2);
                 }else{
                     string eventType=*tokensIterator;
                     tokensIterator++;
                     //communicator
                     if (eventType.compare(PRV_BODY_COMMUNICATOR)==0){
-                        //do nothing TODO, low priority...
+                        prvEvent= new PrvOther();
                     //communications
                     }else if (eventType.compare(PRV_BODY_COMMUNICATION)==0){
-                        parseCommunications(tokens, currentTimestamp, lineNumber);
+                        prvEvent=parseCommunications(tokens, currentTimestamp, lineNumber);
                     }else if (eventType.compare(PRV_BODY_EVENTS)==0){
-                        parseEvents(tokens, currentTimestamp, lineNumber);
+                        prvEvent=parseEvents(tokens, currentTimestamp, lineNumber);
                     }else if (eventType.compare(PRV_BODY_STATE)==0){
-                        parseState(tokens, currentTimestamp, lineNumber);
+                        prvEvent=parseState(tokens, currentTimestamp, lineNumber);
                     }
                 }
                 delete tokens;
             } 
+        }else{
+            prvEvent=new PrvOther(lineNumber);
+            prvEvent->setType(prveventtype::End);
         }
-        interpreterComponent->finalize();
-        delete currentTimestamp;
     }
+    return prvEvent;
 }
 
-void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > *tokens)
+prvreader::PrvEvent* prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > *tokens)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     string temp=*tokensIterator;
@@ -76,8 +73,6 @@ void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > 
     replace(temp.begin(), temp.end(), '*', ':');
     prvMetaData->setComment(temp);
     tokensIterator++;
-    Message::Info("Comment: " +temp, 3);
-    //duration_unit
     temp=*tokensIterator;
     tokensIterator++;
     vector<string> tokensTemp;
@@ -90,38 +85,25 @@ void prvreader::PrvParser::parseHeader(tokenizer<escaped_list_separator<char> > 
     }else{
         prvMetaData->setTimeUnit("");
     }
-    Message::Info("Duration: " +to_string(prvMetaData->getDuration())+", Unit: "+prvMetaData->getTimeUnit(), 3);
-    //nodes"<cpu>"
     temp=*tokensIterator;
     tokensIterator++;
-    //nodes;<cpu>;
     tokensTemp.clear();
     split(tokensTemp, temp, is_any_of(GENERIC_SEP));
-    //nodes
     int nodes=atoi(tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_NODES).c_str());
     prvMetaData->setNodes(nodes);
-    Message::Info("Number of nodes: " +to_string(prvMetaData->getNodes()), 3);
     vector<int> * cpus = new vector<int>();
-    Message::Info("CPUS:", 3);
     temp=tokensTemp.operator [](PRV_HEADER_SUBFIELD_HW_CPUS);
     split(tokensTemp, temp, is_any_of(PRV_HEADER_SEP_HW_CPUS));
     for (int i=0; i<tokensTemp.size(); i++){
         cpus->push_back(atoi(tokensTemp.operator [](i).c_str()));
-        Message::Info("Node: "+to_string(i)+", CPU number: "+to_string(cpus->at(i)), 4);
     }
     prvMetaData->setCpus(cpus);
-    //drop what follows, not necessary to rebuild the hierarchy
-    //...
-    //saving metadata
-    Message::Info("Initializing writer", 2);
-    Message::Info("Storing metadata", 3);
-    interpreterComponent->setPrvMetaData(prvMetaData);
-    Message::Info("Storing event types", 3);
-    interpreterComponent->setPcfParser(pcfParser);
-    interpreterComponent->initialize();
+    PrvEvent* prvEvent=new PrvOther();
+    prvEvent->setType(prveventtype::Header);
+    return prvEvent;
 }
 
-void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber)
+prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -130,7 +112,7 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > 
     int cpu=atoi(temp.c_str());
     if (cpu==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return;
+        return new PrvOther(lineNumber);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -144,11 +126,11 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > 
     temp=*tokensIterator;
     tokensIterator++;
     long timestamp=stol(temp);
-    if (*currentTimestamp>timestamp){
-        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(timestamp)+" Previous timestamp: "+to_string(*currentTimestamp)+". Leaving...");
-        return;
+    if (currentTimestamp>timestamp){
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(timestamp)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
+        return new PrvOther(lineNumber);
     }
-    *currentTimestamp=timestamp;
+    currentTimestamp=timestamp;
     map<int, string>* events=new map<int, string>();
     for (; tokensIterator!=tokens->end();){
         temp=*tokensIterator;
@@ -158,11 +140,10 @@ void prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > 
         tokensIterator++;
         events->operator [](id)=temp;
     }
-    interpreterComponent->pushEvents(cpu, app, task, thread, timestamp, events, lineNumber);
-    delete events;
+    return new PrvEvents(cpu, app, task, thread, timestamp, lineNumber, events);
 }
 
-void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber)
+prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -171,7 +152,7 @@ void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *
     int cpu=atoi(temp.c_str());
     if (cpu==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return;
+        return new PrvOther(lineNumber);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -185,19 +166,19 @@ void prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *
     temp=*tokensIterator;
     tokensIterator++;
     long startTimestamp=stol(temp);
-    if (*currentTimestamp>startTimestamp){
-        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp)+" Previous timestamp: "+to_string(*currentTimestamp)+". Leaving...");
-        return;
+    if (currentTimestamp>startTimestamp){
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
+        return new PrvOther(lineNumber);
     }
-    *currentTimestamp=startTimestamp;
+    currentTimestamp=startTimestamp;
     temp=*tokensIterator;
     tokensIterator++;
     long endTimestamp=stol(temp);
     temp=*tokensIterator;
-    interpreterComponent->pushState(cpu, app, task, thread, startTimestamp, endTimestamp, temp, lineNumber);
+    return new PrvState(cpu, app, task, thread, startTimestamp,  lineNumber, endTimestamp, temp);
 }
 
-void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long * currentTimestamp, long lineNumber)
+prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -206,7 +187,7 @@ void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<
     int cpu1=atoi(temp.c_str());
     if (cpu1==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return;
+        return new PrvOther(lineNumber);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -220,20 +201,20 @@ void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<
     temp=*tokensIterator;
     tokensIterator++;
     long startTimestampSW=stol(temp);
-    *currentTimestamp=startTimestampSW;
+    currentTimestamp=startTimestampSW;
     temp=*tokensIterator;
     tokensIterator++;
     long startTimestampHW=stol(temp);
-    if (*currentTimestamp>startTimestampHW){
-        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW)+" Previous timestamp: "+to_string(*currentTimestamp)+". Leaving...");
-        return;
+    if (currentTimestamp>startTimestampHW){
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
+        return new PrvOther(lineNumber);
     }
     temp=*tokensIterator;
     tokensIterator++;
     int cpu2=atoi(temp.c_str());
     if (cpu2==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return;
+        return new PrvOther(lineNumber);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -252,6 +233,16 @@ void prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<
     long endTimestampSW=stol(temp);
     temp=*tokensIterator;
     //Communication tag is not retrieved. Should we?
-    interpreterComponent->pushCommunications(cpu1, app1, task1, thread1, cpu2, app2, task2, thread2, startTimestampSW, startTimestampHW, endTimestampSW, endTimestampHW, temp, lineNumber);
+    return new PrvCommunications(cpu1, app1, task1, thread1, startTimestampSW, lineNumber, cpu2, app2, task2, thread2, endTimestampSW, startTimestampHW, endTimestampHW, temp);
 //events
+}
+
+prvreader::PcfParser *prvreader::PrvParser::getPcfParser() const
+{
+    return pcfParser;
+}
+
+prvreader::PrvMetaData *prvreader::PrvParser::getPrvMetaData() const
+{
+    return prvMetaData;
 }
