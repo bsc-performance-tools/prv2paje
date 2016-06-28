@@ -4,6 +4,7 @@ include( ExternalProject )
 set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 OPTION(PRV2PAJE_OPT "Paraver to Pajé trace formats converter" ON)
+OPTION(PRV2FRAMESOC_OPT "Paraver to Framesoc library" ON)
 OPTION(STATIC_OPT "Generate static libraries" OFF)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
