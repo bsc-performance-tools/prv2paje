@@ -9,7 +9,7 @@ file(GLOB HEADER_FILES ${HEADER_DIR}/*.h)
 
 include_directories(${HEADER_DIR} ${prvreader_INCLUDE_DIRS})
 
-add_library(${PROJECT_NAME} STATIC ${SRC_FILES} ${HEADER_FILES})
+add_library(${PROJECT_NAME} SHARED ${SRC_FILES} ${HEADER_FILES})
 
 add_definitions(-D__BUILD_VERSION__="${PRVSUITE_VERSION}")
 
