@@ -343,15 +343,15 @@ void prv2paje::PajeWriter::generate()
         PrvEvent *prvEvent=prvParser->parseLine();
         type=prvEvent->getType();
         if (type==prveventtype::Events){
-            PrvEvents* cast=dynamic_cast<PrvEvents*> (prvEvent);
+            PrvEvents* cast=static_cast<PrvEvents*> (prvEvent);
             push(cast);
         }
         else if (type==prveventtype::State){
-            PrvState* cast=dynamic_cast<PrvState*> (prvEvent);
+            PrvState* cast=static_cast<PrvState*> (prvEvent);
             push(cast);
         }
         else if (type==prveventtype::Communications){
-            PrvCommunications* cast=dynamic_cast<PrvCommunications*> (prvEvent);
+            PrvCommunications* cast=static_cast<PrvCommunications*> (prvEvent);
             push(cast);
         }
         else if (type==prveventtype::End){
