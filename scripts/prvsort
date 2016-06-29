@@ -7,4 +7,4 @@ fi
 mv $1 $1.bak
 head -n 1 $1.bak > $1
 grep '^c' $1.bak >> $1
-grep '^[123]:' $1.bak | LC_ALL=C sort --parallel=4 -n -t: -k 7,7n -k 1,1rn >> $1
+grep '^[123]:' $1.bak | LC_ALL=C sort --parallel=4 -n -t: -k 6,6n -k 1,1rn >> $1
