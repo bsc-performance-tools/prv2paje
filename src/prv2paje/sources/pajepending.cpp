@@ -8,7 +8,6 @@ prv2paje::PajePending::PajePending()
 void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEvent *pajePendingEvent)
 {
     pajePendingEvents.push_back(pajePendingEvent);
-    pajePendingEvents.sort( prv2paje::PajePending::predicate );
 }
 
 int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pajePendingEvent, bool check)
@@ -36,6 +35,7 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartState 
 void prv2paje::PajePending::pushPendingEvents(double timestamp)
 {
     list<PajePendingEvent*> toDelete;
+    pajePendingEvents.sort( prv2paje::PajePending::predicate );
     for (auto it =pajePendingEvents.begin(); it!=pajePendingEvents.end(); it++){
         if ((*it)->getTimestamp()>timestamp){
             break;
