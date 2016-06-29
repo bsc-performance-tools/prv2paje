@@ -59,6 +59,7 @@ namespace prv2paje{
         PrvParser *prvParser;
         PrvMetaData *prvMetaData;
         PcfParser *pcfParser;
+        bool fast;
     };
 
 }

@@ -1,6 +1,6 @@
 #include "argumentmanager.h"
 
-prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), basic(false), old(false), prvPath(""), pajePath("")
+prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), basic(false), old(false), fast(false), prvPath(""), pajePath("")
 {
     if (argc<2){
         valid=false;
@@ -8,14 +8,22 @@ prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), b
     }else{
         me=string(argv[0]);
         for (int i=1; i<argc; i++){
-            if (ARGUMENT(i, "--basic-header", "--basic-header")){
+            string str=string(argv[i]);
+            //Message::Info("Argument: "+str);
+            if (ARGUMENT(str, "--basic-header", "--basic-header")){
                 basic=true;
-            }else if (ARGUMENT(i, "--old-header", "--old-header")){
+                Message::Info("Basic header enabled");
+            }else if (ARGUMENT(str, "--old-header", "--old-header")){
                 old=true;
-            }else if (ARGUMENT(i, "-o", "--output")){
+                Message::Info("Old header enabled");
+            }else if (ARGUMENT(str, "--fast", "--fast")){
+                fast=true;
+                Message::Info("Fast mode enabled");
+            }else if (ARGUMENT(str, "-o", "--output")){
                 pajePath=string(argv[++i]);
+                Message::Info("Output:"+pajePath);
             }else{
-                prvPath=string(argv[i]);
+                prvPath=str;
                 Message::Info("Input: "+prvPath);
             }
         }
@@ -33,6 +41,7 @@ void prv2paje::ArgumentManager::usage()
     Message::Info("\t -o --output [output-trace]: output Pajé trace");
     Message::Info("\t --old-header: old Pajé header");
     Message::Info("\t --basic-header: basic Pajé header");
+    Message::Info("\t --fast: do not check trace integrity (decrease duration)");
 }
 
 string prv2paje::ArgumentManager::getPajePath() const
@@ -43,6 +52,16 @@ string prv2paje::ArgumentManager::getPajePath() const
 bool prv2paje::ArgumentManager::getOld() const
 {
     return old;
+}
+
+bool prv2paje::ArgumentManager::getFast() const
+{
+    return fast;
+}
+
+void prv2paje::ArgumentManager::setFast(bool value)
+{
+    fast = value;
 }
 
 bool prv2paje::ArgumentManager::getBasic() const

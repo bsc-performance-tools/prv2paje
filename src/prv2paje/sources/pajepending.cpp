@@ -11,11 +11,16 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEvent *paje
     dirty=true;
 }
 
-int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pajePendingEvent, bool check)
+void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartCommunication *pajePendingEvent)
+{
+    pajePendingEvent->pushMe();
+}
+
+int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pajePendingEvent, bool check, bool fast)
 {
 
     if (check){
-        if(!findStartState(pajePendingEvent)){
+        if(!fast&&!findStartState(pajePendingEvent)){
             delete pajePendingEvent;
             return -1;
         }else{
@@ -29,19 +34,16 @@ int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pa
 }
 
 
-void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartState *pajePendingEvent, bool check)
+void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartState *pajePendingEvent, bool check, bool fast)
 {
     pajePendingEvent->pushMe();
-    if (check){
+    if (!fast&&check){
         pajePendingStartStates.push_back(pajePendingEvent);
     }else{
         delete pajePendingEvent;
     }
 
 }
-
-
-
 
 void prv2paje::PajePending::pushPendingEvents(double timestamp)
 {

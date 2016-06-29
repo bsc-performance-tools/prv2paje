@@ -5,12 +5,14 @@ prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath):pajePath
 {
     pcfParser=prvParser->getPcfParser();
     prvMetaData=prvParser->getPrvMetaData();
+    fast=prvParser->getFast();
 }
 
 prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath, bool basicHeader, bool oldHeader):pajePath(pajePath), basicHeader(basicHeader), oldHeader(oldHeader), prvParser(prvParser)
 {
     pcfParser=prvParser->getPcfParser();
     prvMetaData=prvParser->getPrvMetaData();
+    fast=prvParser->getFast();
 }
 
 prv2paje::PajeWriter::~PajeWriter()
@@ -50,7 +52,7 @@ void prv2paje::PajeWriter::push(PrvEvents *prvEvent)
                 PajePendingEndState* pajePendingEndState=new PajePendingEndState(timestamp);
                 pajePendingEndState->setContainer(container);
                 pajePendingEndState->setType(typeString);
-                if (pajePending.addPajePendingEvent(pajePendingEndState, true)==-1){
+                if (pajePending.addPajePendingEvent(pajePendingEndState, true, fast)==-1){
                     Message::Warning("line " + to_string(lineNumber)+ ". Illegal pop. Type: "+to_string(type)+" Value: "+value+
                                     ". Event will be dropped...");
                 }
@@ -59,7 +61,7 @@ void prv2paje::PajeWriter::push(PrvEvents *prvEvent)
                 pajePendingStartState->setContainer(container);
                 pajePendingStartState->setType(typeString);
                 pajePendingStartState->setValue(value);
-                pajePending.addPajePendingEvent(pajePendingStartState, true);
+                pajePending.addPajePendingEvent(pajePendingStartState, true, fast);
             }
         }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==pcfeventtype::Variable){
             try{
@@ -76,6 +78,7 @@ void prv2paje::PajeWriter::push(PrvState *prvEvent)
 {
     double startTimestamp=(double)prvEvent->getTimestamp()/timeDivider;
     double endTimestamp=(double)prvEvent->getEndTimestamp()/timeDivider;
+    pajePending.pushPendingEvents(startTimestamp);
     int cpu=prvEvent->getCpu();
     int app=prvEvent->getApp();
     int task=prvEvent->getTask();
@@ -93,10 +96,9 @@ void prv2paje::PajeWriter::push(PrvState *prvEvent)
         pajePendingStartState->setValue(value);
         PajePendingEndState* pajePendingEndState=new PajePendingEndState(endTimestamp);
         pajePendingEndState->setContainer(container);
-        pajePendingEndState->setType(PAJE_PRVSTATE_ALIAS);
-        pajePending.pushPendingEvents(startTimestamp);
-        pajePending.addPajePendingEvent(pajePendingStartState, false);
-        pajePending.addPajePendingEvent(pajePendingEndState, false);
+        pajePendingEndState->setType(PAJE_PRVSTATE_ALIAS);      
+        pajePending.addPajePendingEvent(pajePendingStartState, false, fast);
+        pajePending.addPajePendingEvent(pajePendingEndState, false, fast);
     }
 }
 
@@ -113,10 +115,11 @@ void prv2paje::PajeWriter::push(PrvCommunications *prvEvent)
     long lineNumber=prvEvent->getLineNumber();
     double startTimestampSW=(double)prvEvent->getTimestamp()/timeDivider;
     double endTimestampSW=(double)prvEvent->getTimestampEnd()/timeDivider;
-    double startTimestampHW=(double)prvEvent->getTimestampHW()/timeDivider;
-    double endTimestampHW=(double)prvEvent->getTimestampHWEnd()/timeDivider;
+    pajePending.pushPendingEvents(startTimestampSW);
+    //double startTimestampHW=(double)prvEvent->getTimestampHW()/timeDivider;
+    //double endTimestampHW=(double)prvEvent->getTimestampHWEnd()/timeDivider;
     string value=prvEvent->getValue();
-    if (startTimestampHW>endTimestampHW){
+    if (startTimestampSW>endTimestampSW){
         Message::Debug("line "+ to_string(lineNumber)+". Communication timestamps (Logical/Physical and/or Start/End) are incoherent. Event will be dropped...");
     }else{
         checkContainerChain(startTimestampSW, cpu1, app1, task1, thread1);
@@ -124,51 +127,56 @@ void prv2paje::PajeWriter::push(PrvCommunications *prvEvent)
         string startContainer = to_string(cpu1)+string(".")+to_string(app1)+string(".")+to_string(task1)+string(".")+to_string(thread1);
         string endContainer = to_string(cpu2)+string(".")+to_string(app2)+string(".")+to_string(task2)+string(".")+to_string(thread2);
         string container = PAJE_CONTAINER_ALIAS_ROOT;
-        string typeHW=PAJE_PRVCOMMUNICATION_HW_ROOT_ALIAS;
+        //string typeHW=PAJE_PRVCOMMUNICATION_HW_ROOT_ALIAS;
         string typeSW=PAJE_PRVCOMMUNICATION_SW_ROOT_ALIAS;
         if (cpu1==cpu2){
-            typeHW=PAJE_PRVCOMMUNICATION_HW_CPU_ALIAS;
+            //typeHW=PAJE_PRVCOMMUNICATION_HW_CPU_ALIAS;
             typeSW=PAJE_PRVCOMMUNICATION_SW_CPU_ALIAS;
             container = string(PAJE_CONTAINER_ALIAS_CPU_PREFIX)+to_string(cpu1);
             if (app1==app2){
-                typeHW=PAJE_PRVCOMMUNICATION_HW_APP_ALIAS;
+                //typeHW=PAJE_PRVCOMMUNICATION_HW_APP_ALIAS;
                 typeSW=PAJE_PRVCOMMUNICATION_SW_APP_ALIAS;
                 container = to_string(cpu1)+string(".")+to_string(app1);
                 if (task1==task2){
-                    typeHW=PAJE_PRVCOMMUNICATION_HW_TASK_ALIAS;
+                    //typeHW=PAJE_PRVCOMMUNICATION_HW_TASK_ALIAS;
                     typeSW=PAJE_PRVCOMMUNICATION_SW_TASK_ALIAS;
                     container = container+string(".")+to_string(task1);
                     if (thread1==thread2){
-                        typeHW=PAJE_PRVCOMMUNICATION_HW_THREAD_ALIAS;
+                        //typeHW=PAJE_PRVCOMMUNICATION_HW_THREAD_ALIAS;
                         typeSW=PAJE_PRVCOMMUNICATION_SW_THREAD_ALIAS;
                         container = container+string(".")+to_string(thread1);
                     }
                 }
             }
         }
-        PajePendingStartCommunication* pajePendingStartCommunicationHW=new PajePendingStartCommunication(startTimestampHW);
-        PajePendingEndCommunication* pajePendingEndCommunicationHW=new PajePendingEndCommunication(endTimestampHW);
+        //PajePendingStartCommunication* pajePendingStartCommunicationHW=new PajePendingStartCommunication(startTimestampHW);
+        //PajePendingEndCommunication* pajePendingEndCommunicationHW=new PajePendingEndCommunication(endTimestampHW);
+        PajePendingStartCommunication* pajePendingStartCommunicationSW=new PajePendingStartCommunication(startTimestampSW);
         PajePendingEndCommunication* pajePendingEndCommunicationSW=new PajePendingEndCommunication(endTimestampSW);
-        pajePendingStartCommunicationHW->setContainer(container);
-        pajePendingEndCommunicationHW->setContainer(container);
+        //pajePendingStartCommunicationHW->setContainer(container);
+        //pajePendingEndCommunicationHW->setContainer(container);
+        pajePendingStartCommunicationSW->setContainer(container);
         pajePendingEndCommunicationSW->setContainer(container);
-        pajePendingStartCommunicationHW->setType(typeHW);
-        pajePendingEndCommunicationHW->setType(typeHW);
+        //pajePendingStartCommunicationHW->setType(typeHW);
+        //pajePendingEndCommunicationHW->setType(typeHW);
+        pajePendingStartCommunicationSW->setType(typeSW);
         pajePendingEndCommunicationSW->setType(typeSW);
-        pajePendingStartCommunicationHW->setSubContainer(startContainer);
-        pajePendingEndCommunicationHW->setSubContainer(endContainer);
+        //pajePendingStartCommunicationHW->setSubContainer(startContainer);
+        //pajePendingEndCommunicationHW->setSubContainer(endContainer);
+        pajePendingStartCommunicationSW->setSubContainer(startContainer);
         pajePendingEndCommunicationSW->setSubContainer(endContainer);
-        pajePendingStartCommunicationHW->setValue(value);
-        pajePendingEndCommunicationHW->setValue(value);
+        //pajePendingStartCommunicationHW->setValue(value);
+        //pajePendingEndCommunicationHW->setValue(value);
+        pajePendingStartCommunicationSW->setValue(value);
         pajePendingEndCommunicationSW->setValue(value);
-        pajePendingStartCommunicationHW->setKey(PajePendingCommunication::GetNextKey());
-        pajePendingEndCommunicationHW->setKey(pajePendingStartCommunicationHW->getKey());
-        pajePendingEndCommunicationSW->setKey(PajePendingEndCommunication::GetNextKey());
-        pajePending.pushPendingEvents(startTimestampHW);
+        //pajePendingStartCommunicationHW->setKey(PajePendingCommunication::GetNextKey());
+        //pajePendingEndCommunicationHW->setKey(pajePendingStartCommunicationHW->getKey());
+        pajePendingStartCommunicationSW->setKey(PajePendingCommunication::GetNextKey());
+        pajePendingEndCommunicationSW->setKey(pajePendingStartCommunicationSW->getKey());
         //TODO manage SW communications
         //poti_StartLink(startTimestampSW, container.c_str(), typeSW.c_str(), startContainer.c_str(), value.c_str(), pajePendingEndCommunicationSW->getKey().c_str());
-        pajePending.addPajePendingEvent(pajePendingStartCommunicationHW);
-        pajePending.addPajePendingEvent(pajePendingEndCommunicationHW);
+        pajePending.addPajePendingEvent(pajePendingStartCommunicationSW);
+        pajePending.addPajePendingEvent(pajePendingEndCommunicationSW);
         //pajePending.addPajePendingEvent(pajePendingEndCommunicationSW);
     }
 }

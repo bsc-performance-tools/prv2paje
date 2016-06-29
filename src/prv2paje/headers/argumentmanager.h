@@ -8,7 +8,7 @@
 #include "prv2paje_config.h"
 #include <message.h>
 
-#define ARGUMENT(n, flag, wholeflag) (strcmp(argv[n],flag)==0||strcmp(argv[n],wholeflag)==0)
+#define ARGUMENT(n, flag, wholeflag) ((n.compare(flag)==0)||(n.compare(wholeflag)==0))
 
 using namespace std;
 using namespace prvreader;
@@ -33,10 +33,15 @@ namespace prv2paje{
 
         bool getOld() const;
 
+        bool getFast() const;
+
+        void setFast(bool value);
+
     private:
         bool valid;
         bool basic;
         bool old;
+        bool fast;
         string me;
         string prvPath;
         string pajePath;

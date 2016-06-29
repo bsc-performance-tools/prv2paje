@@ -35,11 +35,14 @@ namespace prvreader{
     class PrvParser
     {
     public:
+        PrvParser(ifstream* prvStream, PcfParser* pcfParser, bool fast);
         PrvParser(ifstream* prvStream, PcfParser* pcfParser);
         ~PrvParser();
         PrvEvent* parseLine();
         PrvMetaData *getPrvMetaData() const;
         PcfParser *getPcfParser() const;
+        bool getFast() const;
+        void setFast(bool value);
 
     private:
         PrvEvent* parseHeader(tokenizer<escaped_list_separator<char> > *tokens);
@@ -54,6 +57,7 @@ namespace prvreader{
         Mode mode;
         long lineNumber;
         long currentTimestamp;
+        bool fast;
     };
 
 }
