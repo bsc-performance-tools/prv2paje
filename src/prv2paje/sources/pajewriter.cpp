@@ -347,7 +347,9 @@ void prv2paje::PajeWriter::generate()
             }
         }
         else if (type==prveventtype::Header){
+            Message::Info("Parsing Header", 2);
             initialize();
+            Message::Info("Parsing Body", 2);
         }
         else if (type==prveventtype::Critical){
             delete prvEvent;
