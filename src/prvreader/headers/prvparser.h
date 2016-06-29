@@ -43,9 +43,9 @@ namespace prvreader{
 
     private:
         PrvEvent* parseHeader(tokenizer<escaped_list_separator<char> > *tokens);
-        PrvEvent* parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber);
-        PrvEvent* parseState(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber);
-        PrvEvent* parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber);
+        PrvEvent* parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber);
+        PrvEvent* parseState(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber);
+        PrvEvent* parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber);
         enum Mode{Header, Body};
         ifstream* prvStream;
         InterpreterComponent* interpreterComponent;

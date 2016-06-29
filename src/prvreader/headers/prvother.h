@@ -10,6 +10,7 @@ namespace prvreader{
     public:
         PrvOther();
         PrvOther(long linenumber);
+        PrvOther(long linenumber, prveventtype::PrvEventType type);
         ~PrvOther();
     };
 

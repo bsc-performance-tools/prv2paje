@@ -48,18 +48,17 @@ prvreader::PrvEvent* prvreader::PrvParser::parseLine()
                         prvEvent= new PrvOther();
                     //communications
                     }else if (eventType.compare(PRV_BODY_COMMUNICATION)==0){
-                        prvEvent=parseCommunications(tokens, currentTimestamp, lineNumber);
+                        prvEvent=parseCommunications(tokens, lineNumber);
                     }else if (eventType.compare(PRV_BODY_EVENTS)==0){
-                        prvEvent=parseEvents(tokens, currentTimestamp, lineNumber);
+                        prvEvent=parseEvents(tokens, lineNumber);
                     }else if (eventType.compare(PRV_BODY_STATE)==0){
-                        prvEvent=parseState(tokens, currentTimestamp, lineNumber);
+                        prvEvent=parseState(tokens, lineNumber);
                     }
                 }
                 delete tokens;
             } 
         }else{
-            prvEvent=new PrvOther(lineNumber);
-            prvEvent->setType(prveventtype::End);
+            prvEvent=new PrvOther(lineNumber, prveventtype::End);
         }
     }
     return prvEvent;
@@ -98,12 +97,10 @@ prvreader::PrvEvent* prvreader::PrvParser::parseHeader(tokenizer<escaped_list_se
         cpus->push_back(atoi(tokensTemp.operator [](i).c_str()));
     }
     prvMetaData->setCpus(cpus);
-    PrvEvent* prvEvent=new PrvOther();
-    prvEvent->setType(prveventtype::Header);
-    return prvEvent;
+    return new PrvOther(lineNumber, prveventtype::Header);
 }
 
-prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber)
+prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -112,7 +109,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_se
     int cpu=atoi(temp.c_str());
     if (cpu==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::NotConform);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -128,7 +125,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_se
     long timestamp=stol(temp);
     if (currentTimestamp>timestamp){
         Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(timestamp)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::Critical);
     }
     currentTimestamp=timestamp;
     map<int, string>* events=new map<int, string>();
@@ -143,7 +140,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_se
     return new PrvEvents(cpu, app, task, thread, timestamp, lineNumber, events);
 }
 
-prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber)
+prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -152,7 +149,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_sep
     int cpu=atoi(temp.c_str());
     if (cpu==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::NotConform);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -168,7 +165,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_sep
     long startTimestamp=stol(temp);
     if (currentTimestamp>startTimestamp){
         Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestamp)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::Critical);
     }
     currentTimestamp=startTimestamp;
     temp=*tokensIterator;
@@ -178,7 +175,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_sep
     return new PrvState(cpu, app, task, thread, startTimestamp,  lineNumber, endTimestamp, temp);
 }
 
-prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long currentTimestamp, long lineNumber)
+prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber)
 {
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
@@ -187,7 +184,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped
     int cpu1=atoi(temp.c_str());
     if (cpu1==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::NotConform);
     }
     temp=*tokensIterator;
     tokensIterator++;
@@ -207,14 +204,14 @@ prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped
     long startTimestampHW=stol(temp);
     if (currentTimestamp>startTimestampHW){
         Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::Critical);
     }
     temp=*tokensIterator;
     tokensIterator++;
     int cpu2=atoi(temp.c_str());
     if (cpu2==0){
         Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
-        return new PrvOther(lineNumber);
+        return new PrvOther(lineNumber, prveventtype::NotConform);
     }
     temp=*tokensIterator;
     tokensIterator++;

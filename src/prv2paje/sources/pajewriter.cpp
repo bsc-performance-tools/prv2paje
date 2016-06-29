@@ -349,6 +349,10 @@ void prv2paje::PajeWriter::generate()
         else if (type==prveventtype::Header){
             initialize();
         }
+        else if (type==prveventtype::Critical){
+            delete prvEvent;
+            return;
+        }
         delete prvEvent;
     }
     while(type!=prveventtype::End);

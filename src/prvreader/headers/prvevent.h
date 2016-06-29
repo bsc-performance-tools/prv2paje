@@ -3,7 +3,7 @@
 
 namespace prveventtype{
 
-    enum PrvEventType{Events, State, Communications, NotConform, Header, Skip, End};
+    enum PrvEventType{Events, State, Communications, NotConform, Header, Skip, End, Critical};
 
 }
 
