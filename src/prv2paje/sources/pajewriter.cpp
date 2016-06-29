@@ -47,10 +47,19 @@ void prv2paje::PajeWriter::push(PrvEvents *prvEvent)
         }
         if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==pcfeventtype::State){
             if (value.compare(PCF_EVENT_STATE_VALUE_END_STRING)==0){
-
-                poti_PopState (timestamp, container.c_str(), typeString.c_str());
+                PajePendingEndState* pajePendingEndState=new PajePendingEndState(timestamp);
+                pajePendingEndState->setContainer(container);
+                pajePendingEndState->setType(typeString);
+                if (pajePending.addPajePendingEvent(pajePendingEndState, true)==-1){
+                    Message::Warning("line " + to_string(lineNumber)+ ". Illegal pop. Type: "+to_string(type)+" Value: "+value+
+                                    ". Event will be dropped...");
+                }
             }else{
-                poti_PushState (timestamp, container.c_str(), typeString.c_str(), value.c_str());
+                PajePendingStartState* pajePendingStartState=new PajePendingStartState(timestamp);
+                pajePendingStartState->setContainer(container);
+                pajePendingStartState->setType(typeString);
+                pajePendingStartState->setValue(value);
+                pajePending.addPajePendingEvent(pajePendingStartState, true);
             }
         }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==pcfeventtype::Variable){
             try{
@@ -78,12 +87,16 @@ void prv2paje::PajeWriter::push(PrvState *prvEvent)
     }else{
         checkContainerChain(startTimestamp, cpu, app, task, thread);
         string container = to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task)+string(".")+to_string(thread);
+        PajePendingStartState* pajePendingStartState=new PajePendingStartState(startTimestamp);
+        pajePendingStartState->setContainer(container);
+        pajePendingStartState->setType(PAJE_PRVSTATE_ALIAS);
+        pajePendingStartState->setValue(value);
         PajePendingEndState* pajePendingEndState=new PajePendingEndState(endTimestamp);
         pajePendingEndState->setContainer(container);
         pajePendingEndState->setType(PAJE_PRVSTATE_ALIAS);
         pajePending.pushPendingEvents(startTimestamp);
-        poti_PushState (startTimestamp, container.c_str(), PAJE_PRVSTATE_ALIAS, value.c_str());
-        pajePending.addPajePendingEvent(pajePendingEndState);
+        pajePending.addPajePendingEvent(pajePendingStartState, false);
+        pajePending.addPajePendingEvent(pajePendingEndState, false);
     }
 }
 

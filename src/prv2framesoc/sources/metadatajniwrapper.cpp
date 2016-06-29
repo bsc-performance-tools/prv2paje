@@ -1,6 +1,16 @@
 #include "metadatajniwrapper.h"
 
-MetadataJNIWrapper::MetadataJNIWrapper()
+MetaDataJNIWrapper::MetaDataJNIWrapper()
 {
 
+}
+
+MetaDataJNIWrapper::MetaDataJNIWrapper(PrvMetaData *prvMetaData):prvMetaData(prvMetaData)
+{
+
+}
+
+void MetaDataJNIWrapper::setPrvMetaData(PrvMetaData *value)
+{
+    prvMetaData = value;
 }
