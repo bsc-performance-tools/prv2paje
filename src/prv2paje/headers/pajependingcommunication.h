@@ -24,7 +24,7 @@ namespace prv2paje{
         void setValue(string value);
         static int id;
 
-    private:
+    protected:
         string key;
         string subContainer;
         string value;

@@ -30,6 +30,7 @@ namespace prv2paje{
         bool findStartState(PajePendingEvent *pajePendingEvent);
         list<PajePendingEvent*> pajePendingEvents;
         list<PajePendingEvent*> pajePendingStartStates;
+        bool dirty;
     };
 
 }

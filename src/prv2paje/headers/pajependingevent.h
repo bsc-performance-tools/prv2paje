@@ -3,6 +3,7 @@
 
 #include <string>
 #include "prv2paje_config.h"
+#include <poti.h>
 
 using namespace std;
 
@@ -21,6 +22,7 @@ namespace prv2paje{
         friend bool operator!= (const PajePendingEvent &object1, const PajePendingEvent &object2);
 
         virtual string className() = 0;
+        virtual void pushMe() = 0;
 
         double getTimestamp() const;
         void setTimestamp(double value);
@@ -31,7 +33,7 @@ namespace prv2paje{
         string getType() const;
         void setType(const string &value);
 
-    private:
+    protected:
         double timestamp;
         string container;
         string type;

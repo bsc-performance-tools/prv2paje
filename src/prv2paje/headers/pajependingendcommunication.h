@@ -11,6 +11,7 @@ namespace prv2paje{
         PajePendingEndCommunication();
         PajePendingEndCommunication(double timestamp);
         string className();
+        void pushMe();
     };
 
 }

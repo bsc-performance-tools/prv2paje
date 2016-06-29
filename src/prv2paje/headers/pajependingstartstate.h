@@ -17,6 +17,7 @@ namespace prv2paje{
         string className();
         string getValue() const;
         void setValue(const string &value);
+        void pushMe();
 
     private:
         string value;
