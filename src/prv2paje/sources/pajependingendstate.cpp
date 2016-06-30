@@ -18,4 +18,5 @@ string prv2paje::PajePendingEndState::className()
 void prv2paje::PajePendingEndState::pushMe()
 {
     poti_PopState (timestamp, container.c_str(), type.c_str());
+        LastTimestamp=timestamp;
 }

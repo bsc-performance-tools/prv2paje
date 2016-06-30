@@ -33,11 +33,15 @@ namespace prv2paje{
         string getType() const;
         void setType(const string &value);
 
+        static double LastTimestamp;
+
     protected:
         double timestamp;
         string container;
         string type;
     };
+
+    double PajePendingEvent::LastTimestamp;
 
 }
 

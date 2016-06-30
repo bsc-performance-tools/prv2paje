@@ -283,7 +283,11 @@ PrvParser *prv2paje::PajeWriter::getPrvParser() const
 
 void prv2paje::PajeWriter::finalize()
 {
-    pajePending.pushPendingEvents((double)prvMetaData->getDuration()/timeDivider);
+    long timestamp=(double) prvMetaData->getDuration()/timeDivider;
+    if (PajePendingEvent::LastTimestamp>timestamp){
+        timestamp=PajePendingEvent::LastTimestamp;
+    }
+    pajePending.pushPendingEvents(t);
     int i=0;
     for (auto const cpu: containerChain){
         int cpu_index=i++ +1;
@@ -291,13 +295,13 @@ void prv2paje::PajeWriter::finalize()
             for (auto &task: app.second){
                 for (auto &thread: task.second){
                     string alias=to_string(cpu_index)+string(".")+to_string(app.first)+string(".")+to_string(task.first)+string(".")+to_string(thread.first);
-                    poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_THREAD, alias.c_str());
+                    poti_DestroyContainer(timestamp, PAJE_CONTAINER_DEF_ALIAS_THREAD, alias.c_str());
                 }
                 string alias=to_string(cpu_index)+string(".")+to_string(app.first)+string(".")+to_string(task.first);
-                poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_TASK, alias.c_str());
+                poti_DestroyContainer(timestamp, PAJE_CONTAINER_DEF_ALIAS_TASK, alias.c_str());
             }
             string alias=to_string(cpu_index)+string(".")+to_string(app.first);
-            poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_APP, alias.c_str());
+            poti_DestroyContainer(timestamp, PAJE_CONTAINER_DEF_ALIAS_APP, alias.c_str());
         }
     }
     int it=0;
@@ -308,11 +312,11 @@ void prv2paje::PajeWriter::finalize()
             it++;
             string alias2(PAJE_CONTAINER_ALIAS_CPU_PREFIX);
             alias2+=to_string(it);
-            poti_DestroyContainer ((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
+            poti_DestroyContainer (timestamp, PAJE_CONTAINER_DEF_ALIAS_CPU, alias2.c_str());
         }
-        poti_DestroyContainer ((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
+        poti_DestroyContainer (timestamp, PAJE_CONTAINER_DEF_ALIAS_NODE, alias.c_str());
     }
-    poti_DestroyContainer((double)prvMetaData->getDuration()/timeDivider, PAJE_CONTAINER_DEF_ALIAS_ROOT, PAJE_CONTAINER_ALIAS_ROOT);
+    poti_DestroyContainer(timestamp, PAJE_CONTAINER_DEF_ALIAS_ROOT, PAJE_CONTAINER_ALIAS_ROOT);
     poti_close();
 }
 
@@ -387,26 +391,26 @@ void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int 
 {
     if (containerChain.operator [](cpu-1).count(app)==0){
         containerChain[cpu-1][app]= map<int, map<int, bool > >();
-        string name=string(PAJE_CONTAINER_NAME_APP_PREFIX)+to_string(app);
         string alias=to_string(cpu)+string(".")+to_string(app);
+        string name=string(PAJE_CONTAINER_NAME_APP_PREFIX)+to_string(app);
         string parent=string(PAJE_CONTAINER_ALIAS_CPU_PREFIX)+to_string(cpu);
-        poti_CreateContainer(timestamp, alias.c_str(), PAJE_CONTAINER_DEF_ALIAS_APP, parent.c_str(), name.c_str());
+        poti_CreateContainer(timestamp, alias.c_str(), PAJE_CONTAINER_DEF_ALIAS_APP, parent.c_str(), alias.c_str());
     }
     if (containerChain.operator [](cpu-1).operator [](app).count(task)==0){
         containerChain[cpu-1][app][task]= map<int, bool >();
-        string name=string(PAJE_CONTAINER_NAME_TASK_PREFIX)+to_string(task);
         string alias=to_string(cpu)+string(".")+to_string(app);
+        string name=string(PAJE_CONTAINER_NAME_TASK_PREFIX)+to_string(task);
         string parent=alias;
         alias=alias+string(".")+to_string(task);
-        poti_CreateContainer(timestamp, alias.c_str(), PAJE_CONTAINER_DEF_ALIAS_TASK, parent.c_str(), name.c_str());
+        poti_CreateContainer(timestamp, alias.c_str(), PAJE_CONTAINER_DEF_ALIAS_TASK, parent.c_str(), alias.c_str());
     }
     if (containerChain.operator [](cpu-1).operator [](app).operator [](task).count(thread)==0){
         containerChain[cpu-1][app][task][thread]=true;
-        string name=PAJE_CONTAINER_NAME_THREAD_PREFIX+to_string(thread);
         string alias=to_string(cpu)+string(".")+to_string(app)+string(".")+to_string(task);
+        string name=PAJE_CONTAINER_NAME_THREAD_PREFIX+to_string(thread);
         string parent=alias;
         alias=alias+string(".")+to_string(thread);
-        poti_CreateContainer(timestamp, alias.c_str(), PAJE_CONTAINER_DEF_ALIAS_THREAD, parent.c_str(), name.c_str());
+        poti_CreateContainer(timestamp, alias.c_str(), PAJE_CONTAINER_DEF_ALIAS_THREAD, parent.c_str(), alias.c_str());
     }
 }
 
