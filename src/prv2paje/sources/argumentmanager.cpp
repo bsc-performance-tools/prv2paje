@@ -1,6 +1,6 @@
 #include "argumentmanager.h"
 
-prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), basic(false), old(false), fast(false), prvPath(""), pajePath("")
+prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), basic(false), old(false), fast(true), prvPath(""), pajePath("")
 {
     if (argc<2){
         valid=false;
@@ -16,9 +16,9 @@ prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), b
             }else if (ARGUMENT(str, "--old-header", "--old-header")){
                 old=true;
                 Message::Info("Old header enabled");
-            }else if (ARGUMENT(str, "--fast", "--fast")){
-                fast=true;
-                Message::Info("Fast mode enabled");
+            }else if (ARGUMENT(str, "-s", "--strict")){
+                fast=false;
+                Message::Info("Strict mode enabled");
             }else if (ARGUMENT(str, "-o", "--output")){
                 pajePath=string(argv[++i]);
                 Message::Info("Output:"+pajePath);
@@ -41,7 +41,7 @@ void prv2paje::ArgumentManager::usage()
     Message::Info("\t -o --output [output-trace]: output Pajé trace");
     Message::Info("\t --old-header: old Pajé header");
     Message::Info("\t --basic-header: basic Pajé header");
-    Message::Info("\t --fast: do not check trace integrity (decrease duration)");
+    Message::Info("\t -s --strict: check more strictly the trace integrity (increases computation duration and memory consumption)");
 }
 
 string prv2paje::ArgumentManager::getPajePath() const
