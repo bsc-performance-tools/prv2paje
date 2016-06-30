@@ -287,7 +287,7 @@ void prv2paje::PajeWriter::finalize()
     if (PajePendingEvent::LastTimestamp>timestamp){
         timestamp=PajePendingEvent::LastTimestamp;
     }
-    pajePending.pushPendingEvents(t);
+    pajePending.pushPendingEvents(timestamp);
     int i=0;
     for (auto const cpu: containerChain){
         int cpu_index=i++ +1;

@@ -41,7 +41,6 @@ namespace prv2paje{
         string type;
     };
 
-    double PajePendingEvent::LastTimestamp;
 
 }
 

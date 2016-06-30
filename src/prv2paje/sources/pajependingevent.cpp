@@ -1,5 +1,7 @@
 #include "pajependingevent.h"
 
+double prv2paje::PajePendingEvent::LastTimestamp;
+
 prv2paje::PajePendingEvent::PajePendingEvent()
 {
 
