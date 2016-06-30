@@ -22,6 +22,9 @@ prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), b
             }else if (ARGUMENT(str, "-o", "--output")){
                 pajePath=string(argv[++i]);
                 Message::Info("Output:"+pajePath);
+            }else if (ARGUMENT(str, "-f", "--filter")){
+                filterPath=string(argv[++i]);
+                Message::Info("Filter configuration file:"+filterPath);
             }else{
                 prvPath=str;
                 Message::Info("Input: "+prvPath);
@@ -39,6 +42,7 @@ void prv2paje::ArgumentManager::usage()
     Message::Info(string(me.c_str())+" [input-trace].prv");
     Message::Info("Options:");
     Message::Info("\t -o --output [output-trace]: output Pajé trace");
+    Message::Info("\t -f --filter [filter-file]: filtering configuration file");
     Message::Info("\t --old-header: old Pajé header");
     Message::Info("\t --basic-header: basic Pajé header");
     Message::Info("\t -s --strict: check more strictly the trace integrity (increases computation duration and memory consumption)");

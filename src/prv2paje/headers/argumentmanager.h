@@ -42,9 +42,11 @@ namespace prv2paje{
         bool basic;
         bool old;
         bool fast;
+        bool filter;
         string me;
         string prvPath;
         string pajePath;
+        string filterPath;
     };
 
 }
