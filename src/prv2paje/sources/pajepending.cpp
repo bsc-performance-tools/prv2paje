@@ -38,7 +38,7 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartState 
 {
     pajePendingEvent->pushMe();
     if ((!fast)&&check){
-        pajePendingStartStates.push_back(pajePendingEvent);
+        hasBeenPushed[pajePendingEvent->getContainer()][pajePendingEvent->getType()]=true;
     }else{
         delete pajePendingEvent;
     }
@@ -72,22 +72,15 @@ bool prv2paje::PajePending::predicate(const prv2paje::PajePendingEvent *p1, cons
 
 bool prv2paje::PajePending::findStartState(prv2paje::PajePendingEvent *pajePendingEvent)
 {
-    bool ret=false;
-    list<PajePendingEvent*> toDelete;
-    if (pajePendingStartStates.empty())
-        return ret;
-    for (auto it =pajePendingStartStates.begin(); it!=pajePendingStartStates.end(); it++){
-        if (((*it)->getContainer().compare(pajePendingEvent->getContainer())==0)&&((*it)->getType().compare(pajePendingEvent->getType())==0)){
-            toDelete.push_back(*it);
-            it=pajePendingStartStates.erase(it);
-            ret=true;
-            break;
+    if (hasBeenPushed.count(pajePendingEvent->getContainer())>0){
+        if (hasBeenPushed.at(pajePendingEvent->getContainer()).count(pajePendingEvent->getType())>0){
+            return true;
         }
+        return false;
     }
-    for (PajePendingEvent* it2: toDelete){
-        delete it2;
+    else{
+        return false;
     }
-    return ret;
 }
 
 

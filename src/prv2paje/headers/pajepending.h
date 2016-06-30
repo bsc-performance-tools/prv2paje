@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <map>
 #include <poti.h>
 #include "pajependingevent.h"
 #include "pajependingstartstate.h"
@@ -30,7 +31,7 @@ namespace prv2paje{
         static bool predicate(const PajePendingEvent* p1, const PajePendingEvent *p2);
         bool findStartState(PajePendingEvent *pajePendingEvent);
         list<PajePendingEvent*> pajePendingEvents;
-        list<PajePendingEvent*> pajePendingStartStates;
+        map<string,map<string, bool> > hasBeenPushed;
         bool dirty;
     };
 
