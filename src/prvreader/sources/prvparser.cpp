@@ -25,7 +25,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseLine()
     if (prvStream){
         if(getline(*prvStream,line)){
             lineNumber++;
-            if (lineNumber%100000==0){
+            if (lineNumber%10000==0){
                 Message::Debug(to_string(lineNumber)+ " lines processed");
             }
             replace(line.begin(), line.end(), '\t', ' ');
@@ -51,7 +51,7 @@ prvreader::PrvEvent* prvreader::PrvParser::parseLine()
                     tokensIterator++;
                     //communicator
                     if (eventType.compare(PRV_BODY_COMMUNICATOR)==0){
-                        prvEvent= new PrvOther();
+                        prvEvent= new PrvOther(lineNumber, prveventtype::Skip);
                     //communications
                     }else if (eventType.compare(PRV_BODY_COMMUNICATION)==0){
                         prvEvent=parseCommunications(tokens, lineNumber);
@@ -59,6 +59,8 @@ prvreader::PrvEvent* prvreader::PrvParser::parseLine()
                         prvEvent=parseEvents(tokens, lineNumber);
                     }else if (eventType.compare(PRV_BODY_STATE)==0){
                         prvEvent=parseState(tokens, lineNumber);
+                    }else{
+                        prvEvent= new PrvOther(lineNumber, prveventtype::Skip);
                     }
                 }
                 delete tokens;
