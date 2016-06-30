@@ -20,7 +20,7 @@ int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pa
 {
 
     if (check){
-        if(!fast&&!findStartState(pajePendingEvent)){
+        if((!fast)&&(!findStartState(pajePendingEvent))){
             delete pajePendingEvent;
             return -1;
         }else{
@@ -37,7 +37,7 @@ int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pa
 void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartState *pajePendingEvent, bool check, bool fast)
 {
     pajePendingEvent->pushMe();
-    if (!fast&&check){
+    if ((!fast)&&check){
         pajePendingStartStates.push_back(pajePendingEvent);
     }else{
         delete pajePendingEvent;
