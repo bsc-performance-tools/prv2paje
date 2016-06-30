@@ -239,7 +239,7 @@ void prv2paje::PajeWriter::definePajeEvents()
     for (auto const &it : *(pcfParser->getPcfStates()->getValues())){
         string alias=to_string(it.first);
         string name=string("\"")+it.second+string("\"");
-        replace(name.begin(), name.end(), ';', ',');
+        replace(name.begin(), name.end(), ',', ';');
         string color= to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getR()/255)+string(" ")+
                       to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getG()/255)+string(" ")+
                       to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getB()/255);
@@ -248,13 +248,13 @@ void prv2paje::PajeWriter::definePajeEvents()
     for (auto const &it : *(pcfParser->getPcfEvents())){
         string alias=to_string(it.first);
         string name=it.second->getLabel();
-        replace(name.begin(), name.end(), ';', ',');
+        replace(name.begin(), name.end(), ',', ';');
         if (it.second->getEventType()==pcfeventtype::State){
             poti_DefineStateType(alias.c_str(), PAJE_CONTAINER_DEF_NAME_THREAD, name.c_str());
             for (auto const &it2 : *(it.second->getValues())){
                 string alias2=to_string(it2.first);
                 string name2="\""+it2.second->getLabel()+"\"";
-                replace(name2.begin(), name2.end(), ';', ',');
+                replace(name2.begin(), name2.end(), ',', ';');
                 string color= to_string((float) rand()/RAND_MAX)+string(" ")+
                               to_string((float) rand()/RAND_MAX)+string(" ")+
                               to_string((float) rand()/RAND_MAX);
