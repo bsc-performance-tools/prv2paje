@@ -11,10 +11,10 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEvent *paje
     dirty=true;
 }
 
-void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartCommunication *pajePendingEvent)
+/*void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartCommunication *pajePendingEvent)
 {
     pajePendingEvent->pushMe();
-}
+}*/
 
 int prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingEndState *pajePendingEvent, bool check, bool fast)
 {

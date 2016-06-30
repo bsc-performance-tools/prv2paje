@@ -236,12 +236,18 @@ prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped
             Message::Warning("line "+ to_string(lineNumber)+". CPU value is 0. Event will be dropped...");
             return new PrvOther(lineNumber, prveventtype::NotConform);
         }
-        if (currentTimestamp>startTimestampSW){
-            Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampSW)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
-            return new PrvOther(lineNumber, prveventtype::Critical);
-        }
     }
-    currentTimestamp=startTimestampSW;
+    if (currentTimestamp>startTimestampHW){
+        Message::Critical("line "+ to_string(lineNumber)+". Events are not correctly time-sorted. Current timestamp: "+ to_string(startTimestampHW)+" Previous timestamp: "+to_string(currentTimestamp)+". Leaving...");
+        return new PrvOther(lineNumber, prveventtype::Critical);
+    }
+    if (startTimestampHW<startTimestampSW){
+        return new PrvOther(lineNumber, prveventtype::NotConform);
+    }
+    if (endTimestampHW<startTimestampHW){
+        return new PrvOther(lineNumber, prveventtype::NotConform);
+    }
+    currentTimestamp=startTimestampHW;
     //Communication tag is not retrieved. Should we?
     return new PrvCommunications(cpu1, app1, task1, thread1, startTimestampSW, lineNumber, cpu2, app2, task2, thread2, endTimestampSW, startTimestampHW, endTimestampHW, temp);
 //events

@@ -22,7 +22,7 @@ namespace prv2paje{
     public:
         PajePending();
         void addPajePendingEvent(PajePendingEvent *pajePendingEvent);
-        void addPajePendingEvent(PajePendingStartCommunication *pajePendingEvent);
+        //void addPajePendingEvent(PajePendingStartCommunication *pajePendingEvent);
         int addPajePendingEvent(PajePendingEndState *pajePendingEvent, bool check, bool fast);
         void addPajePendingEvent(PajePendingStartState *pajePendingEvent, bool check, bool fast);
         void pushPendingEvents(double timestamp);
