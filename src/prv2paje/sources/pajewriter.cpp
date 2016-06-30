@@ -283,7 +283,7 @@ PrvParser *prv2paje::PajeWriter::getPrvParser() const
 
 void prv2paje::PajeWriter::finalize()
 {
-    long timestamp=(double) prvMetaData->getDuration()/timeDivider;
+    double timestamp=(double) prvMetaData->getDuration()/timeDivider;
     if (PajePendingEvent::LastTimestamp>timestamp){
         timestamp=PajePendingEvent::LastTimestamp;
     }
