@@ -117,10 +117,10 @@ void prv2paje::PajeWriter::push(PrvCommunications *prvEvent)
     double endTimestampSW=(double)prvEvent->getTimestampEnd()/timeDivider;
     double startTimestampHW=(double)prvEvent->getTimestampHW()/timeDivider;
     double endTimestampHW=(double)prvEvent->getTimestampHWEnd()/timeDivider;
-    pajePending.pushPendingEvents(startTimestampSW);
+    pajePending.pushPendingEvents(startTimestampHW);
     string value=prvEvent->getValue();
     if (startTimestampHW>endTimestampHW){
-        Message::Debug("line "+ to_string(lineNumber)+". Communication timestamps (Logical/Physical and/or Start/End) are incoherent. Event will be dropped...");
+        Message::Debug("line "+ to_string(lineNumber)+". Backward communication. Event will be dropped...");
     }else{
         checkContainerChain(startTimestampSW, cpu1, app1, task1, thread1);
         checkContainerChain(startTimestampSW, cpu2, app2, task2, thread2);
