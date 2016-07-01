@@ -4,13 +4,13 @@
 prvreader::PrvParser::PrvParser(ifstream *prvStream, prvreader::PcfParser *pcfParser):
     prvStream(prvStream), pcfParser(pcfParser), prvMetaData(new PrvMetaData()), mode(Header), lineNumber(0), currentTimestamp(0), fast(false)
 {
-
+    filter=pcfParser->getFilter();
 }
 
 prvreader::PrvParser::PrvParser(ifstream *prvStream, prvreader::PcfParser *pcfParser, bool fast):
     prvStream(prvStream), pcfParser(pcfParser), prvMetaData(new PrvMetaData()), mode(Header), lineNumber(0), currentTimestamp(0), fast(fast)
 {
-
+    filter=pcfParser->getFilter();
 }
 
 prvreader::PrvParser::~PrvParser()
@@ -110,6 +110,9 @@ prvreader::PrvEvent* prvreader::PrvParser::parseHeader(tokenizer<escaped_list_se
 
 prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber)
 {
+    if (filter->getDisableEvents()){
+        return new PrvOther(lineNumber, prveventtype::Filtered);
+    }
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
     string temp=*tokensIterator;
@@ -134,7 +137,9 @@ prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_se
         int id=atoi(temp.c_str());
         temp=*tokensIterator;
         tokensIterator++;
-        events->operator [](id)=temp;
+        if (!filter->isFiltered(id)){
+            events->operator [](id)=temp;
+        }
     }
     if (!fast){
         if (cpu==0){
@@ -152,6 +157,9 @@ prvreader::PrvEvent* prvreader::PrvParser::parseEvents(tokenizer<escaped_list_se
 
 prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber)
 {
+    if (filter->getDisableStates()){
+        return new PrvOther(lineNumber, prveventtype::Filtered);
+    }
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
     string temp=*tokensIterator;
@@ -190,6 +198,9 @@ prvreader::PrvEvent* prvreader::PrvParser::parseState(tokenizer<escaped_list_sep
 
 prvreader::PrvEvent* prvreader::PrvParser::parseCommunications(tokenizer<escaped_list_separator<char> > *tokens, long lineNumber)
 {
+    if (filter->getDisableCommunications()){
+        return new PrvOther(lineNumber, prveventtype::Filtered);
+    }
     tokenizer<escaped_list_separator<char> >::iterator tokensIterator=tokens->begin();
     tokensIterator++;
     string temp=*tokensIterator;

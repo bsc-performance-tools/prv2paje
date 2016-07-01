@@ -1,6 +1,6 @@
 #include "argumentmanager.h"
 
-prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), basic(false), old(false), fast(true), prvPath(""), pajePath("")
+prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), basic(false), old(false), fast(true), prvPath(""), pajePath(""), filterPath("")
 {
     if (argc<2){
         valid=false;
@@ -21,10 +21,10 @@ prv2paje::ArgumentManager::ArgumentManager(int argc, char **argv):valid(true), b
                 Message::Info("Strict mode enabled");
             }else if (ARGUMENT(str, "-o", "--output")){
                 pajePath=string(argv[++i]);
-                Message::Info("Output:"+pajePath);
+                Message::Info("Output: "+pajePath);
             }else if (ARGUMENT(str, "-f", "--filter")){
                 filterPath=string(argv[++i]);
-                Message::Info("Filter configuration file:"+filterPath);
+                Message::Info("Filter configuration file: "+filterPath);
             }else{
                 prvPath=str;
                 Message::Info("Input: "+prvPath);
@@ -66,6 +66,11 @@ bool prv2paje::ArgumentManager::getFast() const
 void prv2paje::ArgumentManager::setFast(bool value)
 {
     fast = value;
+}
+
+string prv2paje::ArgumentManager::getFilterPath() const
+{
+    return filterPath;
 }
 
 bool prv2paje::ArgumentManager::getBasic() const

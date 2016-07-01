@@ -9,7 +9,6 @@ prv2paje::PajeFileManager::PajeFileManager(string pajePath):pajePath(pajePath)
     if (pajeStream->is_open()){
         pajeValid=true;
     }
-
 }
 
 prv2paje::PajeFileManager::~PajeFileManager()

@@ -46,7 +46,7 @@ namespace prv2paje{
     private:
         void finalize();
         void initialize();
-        void checkContainerChain(long int timestamp, int cpu, int app, int task, int thread);
+        void checkContainerChain(double timestamp, int cpu, int app, int task, int thread);
         void generatePajeHeader();
         void defineAndCreatePajeContainers();
         void definePajeEvents();
@@ -59,6 +59,7 @@ namespace prv2paje{
         PrvParser *prvParser;
         PrvMetaData *prvMetaData;
         PcfParser *pcfParser;
+        PrvFilter* filter;
         bool fast;
         bool alias;
     };

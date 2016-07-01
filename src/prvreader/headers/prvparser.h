@@ -23,6 +23,7 @@
 #include "prvstate.h"
 #include "prvcommunications.h"
 #include "prvother.h"
+#include "prvfilter.h"
 
 
 
@@ -58,6 +59,7 @@ namespace prvreader{
         long lineNumber;
         long currentTimestamp;
         bool fast;
+        PrvFilter* filter;
     };
 
 }

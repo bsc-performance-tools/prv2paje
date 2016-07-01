@@ -18,6 +18,7 @@
 #include "pcfevents.h"
 #include "pcfgradient.h"
 #include "pcfvalue.h"
+#include "prvfilter.h"
 
 using namespace std;
 using namespace boost::algorithm;
@@ -27,7 +28,7 @@ namespace prvreader{
     class PcfParser
     {
     public:
-        PcfParser(ifstream* pcfStream);
+        PcfParser(ifstream* pcfStream, PrvFilter* filter);
         ~PcfParser();
         map<string, PcfOptions *> *getPcfOptions() const;
         PcfStates *getPcfStates() const;
@@ -35,10 +36,14 @@ namespace prvreader{
         PcfGradient *getPcfGradient() const;
         vector<map<int, PcfValue *> *> *getPcfValues() const;
         void parse();
+        PrvFilter *getFilter() const;
+        void setFilter(PrvFilter *value);
 
     private:
+        void filtering();
         enum Mode{Options, States, StatesColor, EventType, Values, GradientColor, GradientName, Unknown};
         ifstream* pcfStream;
+        PrvFilter* filter;
         map<string,PcfOptions*> *pcfOptions;
         PcfStates* pcfStates;
         map<int, PcfEvents*> *pcfEvents;

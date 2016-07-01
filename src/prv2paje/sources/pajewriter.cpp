@@ -6,6 +6,7 @@ prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath):pajePath
     pcfParser=prvParser->getPcfParser();
     prvMetaData=prvParser->getPrvMetaData();
     fast=prvParser->getFast();
+    filter=pcfParser->getFilter();
 }
 
 prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath, bool basicHeader, bool oldHeader):pajePath(pajePath), basicHeader(basicHeader), oldHeader(oldHeader), prvParser(prvParser)
@@ -13,6 +14,7 @@ prv2paje::PajeWriter::PajeWriter(PrvParser* prvParser, string pajePath, bool bas
     pcfParser=prvParser->getPcfParser();
     prvMetaData=prvParser->getPrvMetaData();
     fast=prvParser->getFast();
+    filter=pcfParser->getFilter();
 }
 
 prv2paje::PajeWriter::~PajeWriter()
@@ -225,25 +227,29 @@ void prv2paje::PajeWriter::defineAndCreatePajeContainers()
 void prv2paje::PajeWriter::definePajeEvents()
 {
     srand(time(0));
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_THREAD_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_THREAD_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_TASK_ALIAS, PAJE_CONTAINER_DEF_NAME_TASK, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_TASK_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_APP_ALIAS, PAJE_CONTAINER_DEF_NAME_APP, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_APP_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_CPU_ALIAS, PAJE_CONTAINER_DEF_NAME_CPU, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_CPU_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_ROOT_ALIAS, PAJE_CONTAINER_DEF_NAME_ROOT, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_ROOT_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_THREAD_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_THREAD_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_TASK_ALIAS, PAJE_CONTAINER_DEF_NAME_TASK, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_TASK_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_APP_ALIAS, PAJE_CONTAINER_DEF_NAME_APP, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_APP_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_CPU_ALIAS, PAJE_CONTAINER_DEF_NAME_CPU, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_CPU_NAME);
-    poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_ROOT_ALIAS, PAJE_CONTAINER_DEF_NAME_ROOT, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_ROOT_NAME);
-    poti_DefineStateType(PAJE_PRVSTATE_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVSTATE_NAME);
-    for (auto const &it : *(pcfParser->getPcfStates()->getValues())){
-        string alias=to_string(it.first);
-        string name=string("\"")+it.second+string("\"");
-        replace(name.begin(), name.end(), ',', ';');
-        string color= to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getR()/255)+string(" ")+
-                      to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getG()/255)+string(" ")+
-                      to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getB()/255);
-        poti_DefineEntityValue(alias.c_str(), PAJE_PRVSTATE_NAME, name.c_str(), color.c_str());
+    if (!filter->getDisableCommunications()){
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_THREAD_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_THREAD_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_TASK_ALIAS, PAJE_CONTAINER_DEF_NAME_TASK, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_TASK_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_APP_ALIAS, PAJE_CONTAINER_DEF_NAME_APP, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_APP_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_CPU_ALIAS, PAJE_CONTAINER_DEF_NAME_CPU, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_CPU_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_HW_ROOT_ALIAS, PAJE_CONTAINER_DEF_NAME_ROOT, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_HW_ROOT_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_THREAD_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_THREAD_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_TASK_ALIAS, PAJE_CONTAINER_DEF_NAME_TASK, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_TASK_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_APP_ALIAS, PAJE_CONTAINER_DEF_NAME_APP, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_APP_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_CPU_ALIAS, PAJE_CONTAINER_DEF_NAME_CPU, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_CPU_NAME);
+        poti_DefineLinkType(PAJE_PRVCOMMUNICATION_SW_ROOT_ALIAS, PAJE_CONTAINER_DEF_NAME_ROOT, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVCOMMUNICATION_SW_ROOT_NAME);
+    }
+    if (!filter->getDisableStates()){
+        poti_DefineStateType(PAJE_PRVSTATE_ALIAS, PAJE_CONTAINER_DEF_NAME_THREAD, PAJE_PRVSTATE_NAME);
+        for (auto const &it : *(pcfParser->getPcfStates()->getValues())){
+            string alias=to_string(it.first);
+            string name=string("\"")+it.second+string("\"");
+            replace(name.begin(), name.end(), ',', ';');
+            string color= to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getR()/255)+string(" ")+
+                          to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getG()/255)+string(" ")+
+                          to_string((float) pcfParser->getPcfStates()->getColors()->operator [](it.first).getB()/255);
+            poti_DefineEntityValue(alias.c_str(), PAJE_PRVSTATE_NAME, name.c_str(), color.c_str());
+        }
     }
     for (auto const &it : *(pcfParser->getPcfEvents())){
         string alias=to_string(it.first);
@@ -390,7 +396,7 @@ void prv2paje::PajeWriter::generate()
     while(type!=prveventtype::End);
 }
 
-void prv2paje::PajeWriter::checkContainerChain(long int timestamp, int cpu, int app, int task, int thread)
+void prv2paje::PajeWriter::checkContainerChain(double timestamp, int cpu, int app, int task, int thread)
 {
     if (containerChain.operator [](cpu-1).count(app)==0){
         containerChain[cpu-1][app]= map<int, map<int, bool > >();

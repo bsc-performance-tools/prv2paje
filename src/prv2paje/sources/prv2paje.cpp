@@ -6,6 +6,7 @@
 #include "prvparser.h"
 #include "pajewriter.h"
 #include "message.h"
+#include "filtermanager.h"
 
 using namespace std;
 using namespace prv2paje;
@@ -31,8 +32,13 @@ int main(int argc, char* argv[])
         argumentManager.usage();
         return RETURN_ERR_PAJE;
     }
+    FilterManager *filterManager = new FilterManager(argumentManager.getFilterPath());
+    if (filterManager->getFilterValid()){
+        Message::Info("Parsing filter configuration file",1);
+        filterManager->parse();
+    }
     Message::Info("Parsing configuration file",1);
-    PcfParser *pcfParser = new PcfParser(paraverFileManager.getPcfStream());
+    PcfParser *pcfParser = new PcfParser(paraverFileManager.getPcfStream(), filterManager->getFilter());
     pcfParser->parse();
     PrvParser *prvParser = new PrvParser(paraverFileManager.getPrvStream(), pcfParser, argumentManager.getFast());
     Message::Info("Parsing paraver trace file and generating paje trace file",1);
@@ -41,5 +47,6 @@ int main(int argc, char* argv[])
     delete pajeWriter;
     delete prvParser;
     delete pcfParser;
+    delete filterManager;
     return RETURN_OK;
 }

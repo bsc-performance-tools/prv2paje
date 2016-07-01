@@ -75,4 +75,7 @@
 #define RETURN_ERR_PCF                              2
 #define RETURN_ERR_PAJE                             3
 
+#define FILTER_TYPES                                "#TYPES"
+#define FILTER_EVENT_TYPES                          "#EVENT_TYPES"
+
 #endif // PRV2PAJE_CONFIG_H

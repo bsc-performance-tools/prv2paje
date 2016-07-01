@@ -1,8 +1,8 @@
 #include "pcfparser.h"
 
 
-prvreader::PcfParser::PcfParser(ifstream *pcfStream):
-    pcfStream(pcfStream), pcfOptions(new map<string, PcfOptions*>()), pcfStates(new PcfStates()),
+prvreader::PcfParser::PcfParser(ifstream *pcfStream, PrvFilter* filter):
+    pcfStream(pcfStream), filter(filter), pcfOptions(new map<string, PcfOptions*>()), pcfStates(new PcfStates()),
     pcfEvents(new map<int, PcfEvents*>()), pcfGradient(new PcfGradient()), pcfValues(new vector<map<int, PcfValue*>* >())
 {
 }
@@ -172,6 +172,44 @@ void prvreader::PcfParser::parse(){
             }
         }
     }
+    filtering();
+}
+
+void prvreader::PcfParser::filtering()
+{
+    if (filter->getDisableStates()){
+        delete pcfStates;
+        pcfStates=new PcfStates();
+    }
+    if (filter->getDisableEvents()){
+        for (auto it = pcfEvents->begin();it != pcfEvents->end(); it++){
+            delete it->second;
+        }
+        pcfEvents->clear();
+    }else if (filter->getDisableFilterTypes()){
+        return;
+    }else{
+        list<PcfEvents*> temp;
+        for (auto it = pcfEvents->begin();it != pcfEvents->end(); it++){
+            if (filter->isFiltered(it->first)){
+                temp.push_back(it->second);
+                it=pcfEvents->erase(it);
+            }
+        }
+        for (PcfEvents* it: temp){
+            delete it;
+        }
+    }
+}
+
+prvreader::PrvFilter *prvreader::PcfParser::getFilter() const
+{
+    return filter;
+}
+
+void prvreader::PcfParser::setFilter(PrvFilter *value)
+{
+    filter = value;
 }
 
 vector<map<int, prvreader::PcfValue *> *> * prvreader::PcfParser::getPcfValues() const

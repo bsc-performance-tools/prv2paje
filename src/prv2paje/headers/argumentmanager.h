@@ -29,6 +29,8 @@ namespace prv2paje{
 
         string getPajePath() const;
 
+        string getFilterPath() const;
+
         bool getBasic() const;
 
         bool getOld() const;
