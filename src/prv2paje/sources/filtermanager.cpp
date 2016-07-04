@@ -77,7 +77,7 @@ void prv2paje::FilterManager::parse()
                     try{
                         int type=stoi(line.c_str());
                         filter->addUnfilteredType(type);
-                        Message::Info(line + " event types will be converted",3);
+                        Message::Info(line + " event type will be converted",3);
                     }catch (const std::invalid_argument& err) {
                         Message::Warning("filtering: invalid event type " + line + "will be ignored...");
                     }
