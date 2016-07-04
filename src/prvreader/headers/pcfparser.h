@@ -19,6 +19,7 @@
 #include "pcfgradient.h"
 #include "pcfvalue.h"
 #include "prvfilter.h"
+#include "message.h"
 
 using namespace std;
 using namespace boost::algorithm;

@@ -52,7 +52,7 @@ void prv2paje::PajePending::pushPendingEvents(double timestamp)
         pajePendingEvents.sort( prv2paje::PajePending::predicate );
         dirty=false;
     }
-    for (auto it =pajePendingEvents.begin(); it!=pajePendingEvents.end(); it++){
+    for (auto it =pajePendingEvents.begin(); it!=pajePendingEvents.end();){
         if ((*it)->getTimestamp()>timestamp){
             break;
         }

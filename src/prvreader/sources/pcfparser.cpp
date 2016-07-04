@@ -182,18 +182,19 @@ void prvreader::PcfParser::filtering()
         pcfStates=new PcfStates();
     }
     if (filter->getDisableEvents()){
-        for (auto it = pcfEvents->begin();it != pcfEvents->end(); it++){
-            delete it->second;
+        Message::Info("rm");
+        for (auto const &it : *pcfEvents){
+            delete it.second;
         }
         pcfEvents->clear();
     }else if (filter->getDisableFilterTypes()){
         return;
     }else{
         list<PcfEvents*> temp;
-        for (auto it = pcfEvents->begin();it != pcfEvents->end(); it++){
+        for (auto it = pcfEvents->begin(); it != pcfEvents->end(); it++){
             if (filter->isFiltered(it->first)){
                 temp.push_back(it->second);
-                it=pcfEvents->erase(it);
+                pcfEvents->erase(it);
             }
         }
         for (PcfEvents* it: temp){
