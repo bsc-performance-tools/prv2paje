@@ -182,7 +182,6 @@ void prvreader::PcfParser::filtering()
         pcfStates=new PcfStates();
     }
     if (filter->getDisableEvents()){
-        Message::Info("rm");
         for (auto const &it : *pcfEvents){
             delete it.second;
         }
