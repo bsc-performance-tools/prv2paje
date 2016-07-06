@@ -9,8 +9,6 @@ file(GLOB HEADER_FILES ${HEADER_DIR}/*.h)
 
 include_directories(${HEADER_DIR} ${prvreader_INCLUDE_DIRS} "${CMAKE_BINARY_DIR}/include")
 
-link_directories(${POTI_LIBRARY_DIRS})
-
 add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEADER_FILES})
 
 add_definitions(-D__BUILD_VERSION__="${PRVSUITE_VERSION}")

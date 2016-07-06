@@ -8,8 +8,6 @@ set(HEADER_DIR ${CMAKE_HOME_DIRECTORY}/src/prvreader/headers)
 file(GLOB HEADER_FILES ${HEADER_DIR}/*.h)
 include_directories(${HEADER_DIR} ${Boost_INCLUDE_DIRS})
 
-link_directories(${POTI_LIBRARY_DIRS})
-
 if(STATIC_OPT)
   add_library(${PROJECT_NAME} STATIC ${SRC_FILES} ${HEADER_FILES})
 else()
