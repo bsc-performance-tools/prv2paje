@@ -41,6 +41,6 @@ Options:
 
     - -o --output [output-trace]: output Pajé trace
     - -f --filter [filter-file]: filtering configuration file
-    -	--old-header: old Pajé header
+    - --old-header: old Pajé header
     - --basic-header: basic Pajé header
-    -	-s --strict: check more strictly the trace integrity (increases computation duration and memory consumption)
+    - -s --strict: check more strictly the trace integrity (increases computation duration and memory consumption)
