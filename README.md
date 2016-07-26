@@ -38,6 +38,7 @@ This tools converts a paraver trace to a Pajé trace file
     $ prv2paje [options] input.prv
     
 Options:
+
     - -o --output [output-trace]: output Pajé trace
     - -f --filter [filter-file]: filtering configuration file
     -	--old-header: old Pajé header
