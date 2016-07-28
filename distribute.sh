@@ -14,6 +14,6 @@ else
   version="Unknown"
 fi
 cd ..
-archive=${project}-${version}.tar.bz2 
+archive=prv2paje-${version}.tar.bz2 
 tar -cvjSf $archive $project
 mv $archive $project 
