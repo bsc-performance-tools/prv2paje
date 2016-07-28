@@ -14,5 +14,6 @@ else
   version="Unknown"
 fi
 cd ..
-tar -czf ${project}-${version}.tar.gz $project
-mv ${project}-${version}.tar.gz $project 
+archive=${project}-${version}.tar.bz2 
+tar -cvjSf $archive $project
+mv $archive $project 

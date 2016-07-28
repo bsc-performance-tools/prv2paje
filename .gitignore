@@ -39,3 +39,4 @@ build/*
 
 # Archive
 *.tar.gz
+*.tar.bz2
