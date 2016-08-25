@@ -24,6 +24,7 @@
 #ifndef RGB_H
 #define RGB_H
 
+#include <vector>
 #include <string>
 #include <stdlib.h>
 
