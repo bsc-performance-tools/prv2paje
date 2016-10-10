@@ -7,4 +7,4 @@ then
 fi
 base=$(basename "$1")
 base="${base%.*}"
-tar -jcvf ./${base}.tbz2 ${base}.prv ${base}.row ${base}.pcf
+tar -jcvf ${base}.tbz2 ${base}.prv ${base}.row ${base}.pcf
