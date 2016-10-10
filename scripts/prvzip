@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ ! -f $1 ]
+then
+  "$1 does not exist"
+fi
+base=$(basename "$1")
+tar -jcvf ./${base}.tbz2 ${base}.prv ${base}.row ${base}.pcf
