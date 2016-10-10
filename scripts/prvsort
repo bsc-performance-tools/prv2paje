@@ -3,6 +3,7 @@
 if [ ! -f $1 ]
 then
   "$1 does not exist"
+  exit 1
 fi
 mv $1 $1.bak
 head -n 1 $1.bak > $1

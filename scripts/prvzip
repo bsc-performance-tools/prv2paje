@@ -3,6 +3,8 @@
 if [ ! -f $1 ]
 then
   "$1 does not exist"
+  exit 1
+fi
 base=$(basename "$1")
 base="${filename%.*}"
 tar -jcvf ./${base}.tbz2 ${base}.prv ${base}.row ${base}.pcf
