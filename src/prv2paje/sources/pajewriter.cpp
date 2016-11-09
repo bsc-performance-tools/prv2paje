@@ -92,6 +92,7 @@ void prv2paje::PajeWriter::push(PrvEvents *prvEvent)
             try{
                 long long valueLong=stoll(value.c_str());
                 poti_SetVariable (timestamp, container.c_str(), typeString.c_str(), valueLong);
+                PajePendingEvent::LastTimestamp=timestamp;
             }catch (const std::out_of_range& err) {
                 Message::Warning("line "+ to_string(lineNumber)+". Value out of range. Type: "+to_string(type)+" Value: "+value+". Event will be dropped...");
             }
