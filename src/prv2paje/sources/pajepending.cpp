@@ -85,10 +85,13 @@ void prv2paje::PajePending::finalizePajePendingVariables(double timestamp)
 
 void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingVariable *pajePendingEvent)
 {
-    if (pajePendingVariables.size()==0||pajePendingVariables.count(pajePendingEvent->getContainer())==0||
-            pajePendingVariables.at(pajePendingEvent->getContainer()).count(pajePendingEvent->getType())==0){
+    if (pajePendingVariables.count(pajePendingEvent->getContainer())==0){
+        pajePendingVariables[pajePendingEvent->getContainer()]=map<string,PajePendingVariable*>();
+    }
+    if(pajePendingVariables.at(pajePendingEvent->getContainer()).count(pajePendingEvent->getType())==0){
         pajePendingEvent->pushMe();
         pajePendingVariables[pajePendingEvent->getContainer()][pajePendingEvent->getType()]=pajePendingEvent;
+        return;
     }
     PajePendingVariable *pajePendingVariable=pajePendingVariables[pajePendingEvent->getContainer()][pajePendingEvent->getType()];
     pajePendingVariable->setTimestamp(pajePendingEvent->getTimestamp());
