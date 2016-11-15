@@ -68,6 +68,35 @@ void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingStartState 
 
 }
 
+void prv2paje::PajePending::finalizePajePendingVariables(double timestamp)
+{
+    list<PajePendingEvent*> toDelete;
+    for (auto it: pajePendingVariables){
+        for (auto it2: it.second){
+            (*(it2.second)).setTimestamp(timestamp);
+            (*(it2.second)).pushMe();
+            toDelete.push_back((it2.second));
+        }
+    }
+    for (PajePendingEvent* it: toDelete){
+        delete it;
+    }
+}
+
+void prv2paje::PajePending::addPajePendingEvent(prv2paje::PajePendingVariable *pajePendingEvent)
+{
+    if (pajePendingVariables.size()==0||pajePendingVariables.count(pajePendingEvent->getContainer())==0||
+            pajePendingVariables.at(pajePendingEvent->getContainer()).count(pajePendingEvent->getType())==0){
+        pajePendingEvent->pushMe();
+        pajePendingVariables[pajePendingEvent->getContainer()][pajePendingEvent->getType()]=pajePendingEvent;
+    }
+    PajePendingVariable *pajePendingVariable=pajePendingVariables[pajePendingEvent->getContainer()][pajePendingEvent->getType()];
+    pajePendingVariable->setTimestamp(pajePendingEvent->getTimestamp());
+    pajePendingVariable->pushMe();
+    delete pajePendingVariable;
+    pajePendingVariables[pajePendingEvent->getContainer()][pajePendingEvent->getType()]=pajePendingEvent;
+}
+
 void prv2paje::PajePending::pushPendingEvents(double timestamp)
 {
     list<PajePendingEvent*> toDelete;
