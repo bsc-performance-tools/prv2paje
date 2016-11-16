@@ -90,17 +90,17 @@ void prv2paje::PajeWriter::push(PrvEvents *prvEvent)
             }
         }else if (pcfParser->getPcfEvents()->operator [](type)->getEventType()==pcfeventtype::Variable){
             long long valueLong;
+            PajePendingVariable* pajePendingVariable=new PajePendingVariable(timestamp);
+            pajePendingVariable->setContainer(container);
+            pajePendingVariable->setType(typeString);
             try{
                 valueLong=stoll(value.c_str());
-                PajePendingVariable* pajePendingVariable=new PajePendingVariable(timestamp);
-                pajePendingVariable->setContainer(container);
-                pajePendingVariable->setType(typeString);
                 pajePendingVariable->setValue(valueLong);
-                pajePending.addPajePendingEvent(pajePendingVariable);
             }catch (const std::out_of_range& err) {
                 Message::Warning("line " + to_string(lineNumber)+ " Type: "+to_string(type)+" Value: "+value+". Value will be set top to max long long...");
+                pajePendingVariable->setValue(LONG_LONG_MAX);
             }
-
+            pajePending.addPajePendingEvent(pajePendingVariable);
         }
     }
 }

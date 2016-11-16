@@ -57,7 +57,7 @@ namespace prv2paje{
         static bool predicate(const PajePendingEvent* p1, const PajePendingEvent *p2);
         bool findStartState(PajePendingEvent *pajePendingEvent);
         list<PajePendingEvent*> pajePendingEvents;
-        map<string,map<string,PajePendingVariable*> > pajePendingVariables;
+        //map<string,map<string,PajePendingVariable*> > pajePendingVariables;
         map<string,map<string, bool> > hasBeenPushed;
         bool dirty;
     };
